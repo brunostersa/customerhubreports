@@ -318,7 +318,17 @@
 
   <!-- Posts table -->
   <div class="card">
-    <div class="card-title"><span class="badge badge-info">Blog</span> Todos os posts</div>
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <span><span class="badge badge-info">Blog</span> Todos os posts</span>
+      <select id="blog-sort" onchange="renderBlog()" style="padding:5px 10px;border-radius:8px;border:1.5px solid #ddd;font-size:0.78rem;font-family:inherit;color:#666;background:#fff;cursor:pointer">
+        <option value="date-desc">Data (mais recente)</option>
+        <option value="date-asc">Data (mais antiga)</option>
+        <option value="clicks-desc">Cliques (maior)</option>
+        <option value="impr-desc">Impressões (maior)</option>
+        <option value="tema">Tema</option>
+        <option value="autor">Autor</option>
+      </select>
+    </div>
     <table>
       <thead><tr>
         <th>Data</th><th>Título</th><th>Autor</th><th>Tema</th><th>Cliques</th><th>Impressões</th>
@@ -1095,9 +1105,23 @@ function renderBlog() {
   // Table
   const tbody = document.getElementById('blog-tbody');
   tbody.innerHTML='';
-  [...BLOG_POSTS].forEach(p=>{
+  const sortMode = document.getElementById('blog-sort').value;
+  const toDate = d=>{ const [dd,mm,yy]=d.split('/'); return new Date(+yy,+mm-1,+dd); };
+  const scOf = p=> p.url ? SC_PAGES_BY_URL[p.url] : null;
+  const sorted = [...BLOG_POSTS].sort((a,b)=>{
+    switch(sortMode){
+      case 'date-asc': return toDate(a.date)-toDate(b.date);
+      case 'clicks-desc': return (scOf(b)?.clicks||0)-(scOf(a)?.clicks||0);
+      case 'impr-desc': return (scOf(b)?.impr||0)-(scOf(a)?.impr||0);
+      case 'tema': return a.tema.localeCompare(b.tema);
+      case 'autor': return a.author.localeCompare(b.author);
+      case 'date-desc':
+      default: return toDate(b.date)-toDate(a.date);
+    }
+  });
+  sorted.forEach(p=>{
     const color = TEMA_COLORS[p.tema]||'#888';
-    const sc = p.url ? SC_PAGES_BY_URL[p.url] : null;
+    const sc = scOf(p);
     tbody.innerHTML+=`<tr>
       <td style="white-space:nowrap;color:#999;font-size:0.75rem">${p.date}</td>
       <td style="font-size:0.78rem;max-width:400px">${p.title}</td>
