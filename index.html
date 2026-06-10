@@ -15,10 +15,29 @@
   a.client:hover { border-color: #999; }
   a.client .name { font-size: 1rem; font-weight: 700; }
   a.client .meta { font-size: 0.78rem; color: #999; margin-top: 4px; }
+
+  /* Password gate */
+  .gate { position: fixed; inset: 0; background: #f5f4f0; display: flex; align-items: center; justify-content: center; z-index: 10; }
+  .gate-box { background: #fff; border: 1px solid #ece9e3; border-radius: 12px; padding: 28px 32px; width: 100%; max-width: 320px; text-align: center; }
+  .gate-box h2 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+  .gate-box input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.85rem; font-family: inherit; margin-bottom: 10px; }
+  .gate-box button { width: 100%; padding: 10px 12px; border: none; border-radius: 8px; background: #1a1a18; color: #fff; font-size: 0.85rem; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .gate-box .err { font-size: 0.75rem; color: #c85a20; margin-top: 8px; min-height: 1em; }
+  .content { display: none; }
+  .content.unlocked { display: block; }
 </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="gate" id="gate">
+    <div class="gate-box">
+      <h2>Acesso restrito</h2>
+      <input type="password" id="gate-pass" placeholder="Senha" autofocus>
+      <button onclick="checkPass()">Entrar</button>
+      <div class="err" id="gate-err"></div>
+    </div>
+  </div>
+
+  <div class="wrap content" id="content">
     <h1>Customer Hub Reports</h1>
     <p class="sub">Relatórios de performance por cliente</p>
     <div class="list">
@@ -28,5 +47,35 @@
       </a>
     </div>
   </div>
+
+  <script>
+    const HASH = 'f636d3489941ec3702fa1cb06d30e4113cce3e89cd7829674a25ab2e1e30413b';
+
+    async function sha256(text) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function unlock() {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('content').classList.add('unlocked');
+    }
+
+    async function checkPass() {
+      const val = document.getElementById('gate-pass').value;
+      if (await sha256(val) === HASH) {
+        sessionStorage.setItem('hub-auth', '1');
+        unlock();
+      } else {
+        document.getElementById('gate-err').textContent = 'Senha incorreta.';
+      }
+    }
+
+    document.getElementById('gate-pass').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkPass();
+    });
+
+    if (sessionStorage.getItem('hub-auth') === '1') unlock();
+  </script>
 </body>
 </html>
