@@ -321,10 +321,11 @@
     <div class="card-title"><span class="badge badge-info">Blog</span> Todos os posts</div>
     <table>
       <thead><tr>
-        <th>Data</th><th>Título</th><th>Autor</th><th>Tema</th>
+        <th>Data</th><th>Título</th><th>Autor</th><th>Tema</th><th>Cliques</th><th>Impressões</th>
       </tr></thead>
       <tbody id="blog-tbody"></tbody>
     </table>
+    <div style="font-size:0.7rem;color:#bbb;margin-top:10px">Cliques e impressões via Google Search Console (acumulado). Posts sem dado ainda não geraram tráfego orgânico mensurável.</div>
   </div>
 
 </div><!-- /pane-blog -->
@@ -433,6 +434,8 @@ const SC_PAGES = [
   { label:'Baixa de Hipoteca: remover gravames da matrícula',                url:'baixa-de-hipoteca-como-regularizar-o-imovel-quitado-e-remover-gravames-da-matricula/',  clicks:5,   impr:217,  ctr:2.3,   pos:4.62 },
   { label:'INCC x IPCA',                                                     url:'incc-x-ipca/',                                                                            clicks:5,   impr:161,  ctr:3.11,  pos:6.11 },
 ];
+const SC_PAGES_BY_URL = {};
+SC_PAGES.forEach(p=>SC_PAGES_BY_URL[p.url]=p);
 
 // Analysis by period
 const ANALYSIS = {
@@ -905,7 +908,7 @@ const BLOG_POSTS = [
   {date:'08/06/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de imóvel na planta: quando a construtora pode reter valores e quais são os direitos do comprador'},
   {date:'01/06/2026',author:'Luiz',   tema:'INCC',            title:'Quais documentos preciso enviar para revisar a cobrança de INCC no imóvel na planta?'},
   {date:'25/05/2026',author:'Luiz',   tema:'INCC',            title:'INCC cobrado mensalmente em imóvel na planta: entenda quando a cobrança pode ser abusiva'},
-  {date:'18/05/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de apartamento HIS ou HMP por falta de informação'},
+  {date:'18/05/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de apartamento HIS ou HMP por falta de informação', url:'distrato-de-apartamento-his-ou-hmp-por-falta-de-informacao-o-comprador-pode-pedir-a-rescisao-do-contrato/'},
   {date:'18/05/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de imóvel na planta: alta do INCC pode tornar o contrato inviável?'},
   {date:'15/05/2026',author:'Gabriel',tema:'Baixa de Hipoteca',title:'Baixa de hipoteca judicial: quando entrar com ação para regularizar o imóvel'},
   {date:'13/05/2026',author:'Gabriel',tema:'Distrato',        title:'Multa no distrato de imóvel: quando a retenção pode ser abusiva'},
@@ -914,10 +917,10 @@ const BLOG_POSTS = [
   {date:'06/05/2026',author:'Gabriel',tema:'Distrato',        title:'Distrato por culpa da construtora: quando o comprador pode pedir devolução integral'},
   {date:'01/05/2026',author:'Gabriel',tema:'Baixa de Hipoteca',title:'Imóvel quitado com hipoteca na matrícula: quais riscos o comprador corre'},
   {date:'29/04/2026',author:'Gabriel',tema:'Distrato',        title:'Distrato de imóvel: o que conferir antes de assinar qualquer termo'},
-  {date:'27/04/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Imóvel quitado com hipoteca na matrícula: como baixar a hipoteca e regularizar a escritura'},
+  {date:'27/04/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Imóvel quitado com hipoteca na matrícula: como baixar a hipoteca e regularizar a escritura', url:'imovel-quitado-com-hipoteca-na-matricula-como-baixar-a-hipoteca-e-regularizar-a-escritura/'},
   {date:'24/04/2026',author:'Gabriel',tema:'INCC',            title:'INCC e atraso na entrega do imóvel: como combinar prova do atraso e revisão da cobrança'},
   {date:'22/04/2026',author:'Gabriel',tema:'INCC',            title:'INCC e patrimônio de afetação: o que muda no distrato, nos prazos e na devolução de valores'},
-  {date:'16/04/2026',author:'Luiz',   tema:'INCC',            title:'Revisão de INCC: quando a cobrança é indevida e como recuperar valores pagos a mais'},
+  {date:'16/04/2026',author:'Luiz',   tema:'INCC',            title:'Revisão de INCC: quando a cobrança é indevida e como recuperar valores pagos a mais', url:'revisao-de-incc-quando-a-cobranca-e-indevida-e-como-recuperar-valores-pagos-a-mais/'},
   {date:'13/04/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de Imóvel na Planta: entenda seus direitos, limites de retenção'},
   {date:'10/04/2026',author:'Gabriel',tema:'INCC',            title:'Dano moral por cobrança indevida de INCC'},
   {date:'08/04/2026',author:'Gabriel',tema:'INCC',            title:'INCC após habite-se: quando a cobrança pode ser discutida'},
@@ -933,28 +936,28 @@ const BLOG_POSTS = [
   {date:'11/03/2026',author:'Gabriel',tema:'INCC',            title:'Como negociar INCC com a construtora antes de processar'},
   {date:'06/03/2026',author:'Gabriel',tema:'INCC',            title:'Prazos para questionar INCC: o que observar e como organizar a linha do tempo'},
   {date:'04/03/2026',author:'Gabriel',tema:'INCC',            title:'Restituição de INCC pago a maior: quando cabe devolução simples'},
-  {date:'02/03/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: Como Retirar o Gravame da Matrícula Após Quitar o Imóvel'},
+  {date:'02/03/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: Como Retirar o Gravame da Matrícula Após Quitar o Imóvel', url:'baixa-de-hipoteca-como-regularizar-imovel-quitado-e-retirar-o-gravame-da-matricula/'},
   {date:'20/02/2026',author:'Gabriel',tema:'INCC',            title:'Juros de obra e INCC: como entender a cobrança e conferir o saldo'},
   {date:'18/02/2026',author:'Gabriel',tema:'INCC',            title:'Memória de cálculo do INCC: como exigir da incorporadora e como interpretar'},
-  {date:'13/02/2026',author:'Gabriel',tema:'Distrato',        title:'Distrato e INCC: como a correção influencia a devolução de valores'},
+  {date:'13/02/2026',author:'Gabriel',tema:'Distrato',        title:'Distrato e INCC: como a correção influencia a devolução de valores', url:'distrato-e-incc/'},
   {date:'11/02/2026',author:'Gabriel',tema:'Atraso na Obra',  title:'Atraso na obra e INCC: o índice pode continuar sendo cobrado?'},
   {date:'06/02/2026',author:'Gabriel',tema:'INCC',            title:'Devolução em dobro do INCC: quando pode acontecer e o que você precisa provar'},
-  {date:'04/02/2026',author:'Gabriel',tema:'INCC',            title:'INCC x IPCA: quando o índice muda e como questionar a cobrança'},
-  {date:'02/02/2026',author:'Luiz',   tema:'Distrato',        title:'Rescisão de Contrato com Alienação Fiduciária'},
+  {date:'04/02/2026',author:'Gabriel',tema:'INCC',            title:'INCC x IPCA: quando o índice muda e como questionar a cobrança', url:'incc-x-ipca/'},
+  {date:'02/02/2026',author:'Luiz',   tema:'Distrato',        title:'Rescisão de Contrato com Alienação Fiduciária', url:'rescisao-contrato-alienacao-fiduciaria/'},
   {date:'02/02/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: Como Regularizar Imóvel Quitado'},
   {date:'20/01/2026',author:'Luiz',   tema:'INCC',            title:'Cuidado ao assinar termo de abono ou aditivo com a construtora'},
   {date:'19/01/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Hipoteca ativa pode impedir o financiamento do imóvel?'},
   {date:'12/01/2026',author:'Luiz',   tema:'INCC',            title:'JÁ QUITEI O IMÓVEL: AINDA POSSO PEDIR DEVOLUÇÃO DE INCC PAGO A MAIOR?'},
-  {date:'05/01/2026',author:'Luiz',   tema:'INCC',            title:'INCC após o Habite-se: quando a cobrança é abusiva'},
+  {date:'05/01/2026',author:'Luiz',   tema:'INCC',            title:'INCC após o Habite-se: quando a cobrança é abusiva', url:'incc-apos-o-habite-se-quando-a-cobranca-e-abusiva-e-pode-gerar-devolucao-de-valores/'},
   {date:'24/12/2025',author:'Gabriel',tema:'INCC',            title:'Cobrança indevida/abusiva de INCC: como identificar e recuperar valores pagos a mais'},
   {date:'17/12/2025',author:'Gabriel',tema:'Atraso na Obra',  title:'Atraso na obra: como calcular a indenização e escolher o melhor caminho'},
-  {date:'15/12/2025',author:'Luiz',   tema:'INCC',            title:'Parcela simbólica no INCC: quando a cobrança é abusiva e pode ser anulada'},
+  {date:'15/12/2025',author:'Luiz',   tema:'INCC',            title:'Parcela simbólica no INCC: quando a cobrança é abusiva e pode ser anulada', url:'parcela-simbolica-no-incc-quando-a-cobranca-e-abusiva-e-pode-ser-anulada/'},
   {date:'08/12/2025',author:'Luiz',   tema:'Distrato',        title:'Distrato de Imóvel na Planta: Quais São os Direitos do Comprador em 2025?'},
   {date:'01/12/2025',author:'Luiz',   tema:'INCC',            title:'Comprou imóvel na planta? Justiça manda incorporadoras devolverem valores cobrados a mais'},
-  {date:'01/12/2025',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: como regularizar o imóvel quitado e remover gravames da matrícula'},
-  {date:'28/11/2025',author:'Luiz',   tema:'INCC',            title:'INCC Indevido: Como Identificar Cobranças Abusivas no Contrato de Imóvel na Planta'},
+  {date:'01/12/2025',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: como regularizar o imóvel quitado e remover gravames da matrícula', url:'baixa-de-hipoteca-como-regularizar-o-imovel-quitado-e-remover-gravames-da-matricula/'},
+  {date:'28/11/2025',author:'Luiz',   tema:'INCC',            title:'INCC Indevido: Como Identificar Cobranças Abusivas no Contrato de Imóvel na Planta', url:'incc-indevido-como-identificar-cobrancas-abusivas-no-contrato-de-imovel-na-planta/'},
   {date:'17/11/2025',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: o que a matéria da Exame explica e o que realmente acontece'},
-  {date:'17/11/2025',author:'Luiz',   tema:'INCC',            title:'INCC indevido: quando ocorre cobrança abusiva e quais são os direitos do comprador'},
+  {date:'17/11/2025',author:'Luiz',   tema:'INCC',            title:'INCC indevido: quando ocorre cobrança abusiva e quais são os direitos do comprador', url:'incc-indevido-cobranca-abusiva-direitos-comprador/'},
   {date:'17/11/2025',author:'Julia',  tema:'Outros',          title:'Contrato de imóvel com prazo < 36 meses: correção anual'},
   {date:'07/11/2025',author:'Julia',  tema:'Outros',          title:'Busta & Amaral Advogados participa do Congresso de Direito Imobiliário da OAB-SP'},
   {date:'07/11/2025',author:'Julia',  tema:'INCC',            title:'INCC em contratos de imóveis na planta: quando a correção se torna indevida/abusiva'},
@@ -1094,11 +1097,14 @@ function renderBlog() {
   tbody.innerHTML='';
   [...BLOG_POSTS].forEach(p=>{
     const color = TEMA_COLORS[p.tema]||'#888';
+    const sc = p.url ? SC_PAGES_BY_URL[p.url] : null;
     tbody.innerHTML+=`<tr>
       <td style="white-space:nowrap;color:#999;font-size:0.75rem">${p.date}</td>
       <td style="font-size:0.78rem;max-width:400px">${p.title}</td>
       <td><span style="font-size:0.75rem;font-weight:600;color:#555">${p.author}</span></td>
       <td><span style="background:${color}18;color:${color};font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap">${p.tema}</span></td>
+      <td class="${sc&&sc.clicks>0?'td-strong':'td-muted'}">${sc?sc.clicks:'—'}</td>
+      <td class="td-muted">${sc?fN(sc.impr):'—'}</td>
     </tr>`;
   });
 }
