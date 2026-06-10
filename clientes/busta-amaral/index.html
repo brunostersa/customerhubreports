@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Busta & Amaral Advogados — Relatório Jan–Jun/2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f4f0; color: #1a1a18; padding: 32px 40px; max-width: 1080px; margin: 0 auto; }
+
+  /* Header */
+  .header { margin-bottom: 28px; }
+  .header h1 { font-size: 1.5rem; font-weight: 700; color: #1a1a18; }
+  .header p  { font-size: 0.82rem; color: #888; margin-top: 4px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid #ddd; margin-bottom: 28px; }
+  .tab { padding: 10px 24px; font-size: 0.84rem; font-weight: 600; cursor: pointer; background: none; border: none; font-family: inherit; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all .15s; }
+  .tab:hover { color: #1a1a18; }
+  .tab.active { color: #1a1a18; border-bottom-color: #1a1a18; }
+  .pane { display: none; }
+  .pane.active { display: block; }
+
+  /* Filter */
+  .filter { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .filter-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #aaa; }
+  .filter-btn { padding: 5px 14px; border-radius: 20px; border: 1.5px solid #ddd; background: #fff; font-size: 0.78rem; font-weight: 500; cursor: pointer; color: #666; font-family: inherit; transition: all .15s; }
+  .filter-btn:hover { border-color: #999; color: #1a1a18; }
+  .filter-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .filter-period { margin-left: auto; font-size: 0.72rem; color: #aaa; font-style: italic; }
+
+  /* KPI grid */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi { background: #fff; border-radius: 10px; padding: 16px 18px; border: 1px solid #ece9e3; }
+  .kpi .label { font-size: 0.7rem; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .kpi .value { font-size: 1.55rem; font-weight: 700; color: #1a1a18; line-height: 1; }
+  .kpi .sub { font-size: 0.72rem; color: #aaa; margin-top: 4px; }
+  .kpi .delta-up   { color: #2a7a4a; font-size: 0.72rem; margin-top: 4px; font-weight: 600; }
+  .kpi .delta-down { color: #c85a20; font-size: 0.72rem; margin-top: 4px; font-weight: 600; }
+
+  /* Cards */
+  .card { background: #fff; border-radius: 12px; padding: 20px 22px; border: 1px solid #ece9e3; margin-bottom: 20px; }
+  .card-title { font-size: 0.78rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title .badge { font-size: 0.6rem; padding: 2px 7px; border-radius: 4px; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .badge-google { background: #2451a8; }
+  .badge-meta   { background: #1877f2; }
+  .badge-sc     { background: #34a853; }
+  .badge-info   { background: #888; }
+
+  /* Charts */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .chart-box { background: #fff; border-radius: 12px; padding: 18px 20px; border: 1px solid #ece9e3; }
+  .chart-box-title { font-size: 0.72rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+  .chart-wrap { position: relative; height: 220px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  th { padding: 8px 12px; text-align: left; font-size: 0.68rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 2px solid #f0ede8; }
+  td { padding: 9px 12px; border-bottom: 1px solid #f5f2ee; color: #333; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #faf9f7; }
+  .td-strong { font-weight: 700; color: #1a1a18; }
+  .td-muted { color: #bbb; }
+  .td-up   { color: #2a7a4a; font-weight: 600; }
+  .td-down { color: #c85a20; font-weight: 600; }
+
+  /* Analysis */
+  .analysis-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .analysis-item { background: #faf9f7; border-radius: 8px; padding: 13px 14px; border-left: 3px solid #ddd; }
+  .analysis-item.pos { border-left-color: #34a853; }
+  .analysis-item.warn { border-left-color: #f4a400; }
+  .analysis-item.rec  { border-left-color: #2451a8; }
+  .analysis-item .ai-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-bottom: 4px; }
+  .analysis-item.pos  .ai-label { color: #2a7a4a; }
+  .analysis-item.warn .ai-label { color: #a07010; }
+  .analysis-item.rec  .ai-label { color: #2451a8; }
+  .analysis-item .ai-title { font-size: 0.78rem; font-weight: 700; color: #1a1a18; margin-bottom: 4px; line-height: 1.3; }
+  .analysis-item .ai-body  { font-size: 0.76rem; color: #666; line-height: 1.55; }
+
+  /* Section headers */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #ece9e3; }
+  .section-header h2 { font-size: 0.95rem; font-weight: 700; color: #1a1a18; }
+  .section-header .sh-sub { font-size: 0.75rem; color: #999; }
+  .section-marker { width: 4px; height: 20px; border-radius: 2px; flex-shrink: 0; }
+  .section-marker.google { background: #2451a8; }
+  .section-marker.meta   { background: #1877f2; }
+  .section-marker.sc     { background: #34a853; }
+
+  /* Badges — used only in card titles (small, subtle) */
+  .badge { font-size: 0.58rem; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+  .badge-google { background: #e8eef8; color: #2451a8; }
+  .badge-meta   { background: #e8f0fe; color: #1877f2; }
+  .badge-sc     { background: #e8f5ec; color: #2a7a4a; }
+  .badge-info   { background: #f0ede8; color: #666; }
+
+  /* Footer */
+  .footer { text-align: center; color: #bbb; font-size: 0.72rem; margin-top: 32px; padding-top: 20px; border-top: 1px solid #ece9e3; }
+
+  /* Month pill */
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; background: #f0ede8; color: #666; }
+
+  @media (max-width: 700px) {
+    body { padding: 16px; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .chart-grid { grid-template-columns: 1fr; }
+    .analysis-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Busta & Amaral Advogados</h1>
+  <p>Relatório de Performance · Google Ads + Meta Ads + Search Console · Jan–Jun/2026 · <span style="color:#f4a400">* junho parcial (01–09)</span></p>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('campanhas',this)">📊 Campanhas</button>
+  <button class="tab" onclick="switchTab('organico',this)">🌱 Tráfego Orgânico</button>
+  <button class="tab" onclick="switchTab('blog',this)">✍️ Blog</button>
+</div>
+
+<!-- ══ ABA CAMPANHAS ══════════════════════════════════════════════════════ -->
+<div class="pane active" id="pane-campanhas">
+
+  <div class="filter">
+    <span class="filter-label">Período</span>
+    <button class="filter-btn active" onclick="setPeriod('all',this)">Tudo</button>
+    <button class="filter-btn" onclick="setPeriod('02',this)">Fev/26</button>
+    <button class="filter-btn" onclick="setPeriod('03',this)">Mar/26</button>
+    <button class="filter-btn" onclick="setPeriod('04',this)">Abr/26</button>
+    <button class="filter-btn" onclick="setPeriod('05',this)">Mai/26</button>
+    <button class="filter-btn" onclick="setPeriod('06',this)">Jun/26 *</button>
+    <span class="filter-period" id="period-label">Jan/2026 – Mai/2026</span>
+  </div>
+
+  <!-- KPIs Google -->
+  <div class="section-header">
+    <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4z" fill="#4285F4"/><path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4z" fill="url(#ga_grad)"/><defs><linearGradient id="ga_grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4285F4"/><stop offset="50%" stop-color="#34A853"/><stop offset="100%" stop-color="#FBBC04"/></linearGradient></defs><path d="M33 17H15l-4 7 4 7h18l4-7-4-7z" fill="white" opacity="0.9"/><circle cx="24" cy="24" r="5" fill="#4285F4"/></svg>
+    <h2 id="g-period-title">Jan–Jun/2026</h2>
+    <span class="sh-sub">Google Ads</span>
+  </div>
+  <div class="kpis" id="g-kpis"></div>
+
+  <!-- Google Charts -->
+  <div class="chart-grid">
+    <div class="chart-box">
+      <div class="chart-box-title">Investimento mensal por campanha</div>
+      <div class="chart-wrap"><canvas id="g-bar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-box-title">Custo por contato × CTR</div>
+      <div class="chart-wrap"><canvas id="g-metrics"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Google Table -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="badge badge-google">Google Ads</span> Resumo por campanha</div>
+    <table>
+      <thead><tr>
+        <th>Campanha</th><th>Investimento</th><th>Contatos</th><th>Custo/contato</th><th>Cliques</th><th>CTR</th><th>CPC</th>
+      </tr></thead>
+      <tbody id="g-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- KPIs Meta -->
+  <div class="section-header">
+    <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="meta_grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0082FB"/><stop offset="100%" stop-color="#0039C6"/></linearGradient></defs><rect width="48" height="48" rx="10" fill="url(#meta_grad)"/><path d="M10 28.5c0 3.04 2.1 5.5 4.7 5.5 1.24 0 2.4-.55 3.3-1.5L24 26l5.98 6.5c.92.95 2.08 1.5 3.32 1.5 2.6 0 4.7-2.46 4.7-5.5 0-1.3-.42-2.5-1.1-3.4L30 17.5c-.7-.9-1.7-1.5-2.8-1.5-1.1 0-2.1.6-2.8 1.5L24 18l-.4-.5c-.7-.9-1.7-1.5-2.8-1.5-1.1 0-2.1.6-2.8 1.5l-6.9 7.6c-.68.9-1.1 2.1-1.1 3.4z" fill="white"/></svg>
+    <h2 id="m-period-title">Fev–Jun/2026</h2>
+    <span class="sh-sub">Meta Ads</span>
+  </div>
+  <div class="kpis" id="m-kpis"></div>
+
+  <!-- Meta Charts -->
+  <div class="chart-grid">
+    <div class="chart-box">
+      <div class="chart-box-title">Investimento e alcance mensal</div>
+      <div class="chart-wrap"><canvas id="m-bar"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-box-title">CPM e CPC por mês</div>
+      <div class="chart-wrap"><canvas id="m-metrics"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Meta Table -->
+  <div class="card section-gap">
+    <div class="card-title"><span class="badge badge-meta">Meta Ads</span> Resumo por campanha</div>
+    <table>
+      <thead><tr>
+        <th>Campanha</th><th>Período</th><th>Investimento</th><th>Alcance</th><th>Impressões</th><th>Cliques</th><th>CTR</th><th>CPM</th>
+      </tr></thead>
+      <tbody id="m-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Analysis -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-info">Análise</span> <span id="a-title">Jan–Mai/2026</span></div>
+    <div id="analysis-content"></div>
+  </div>
+
+</div><!-- /pane-campanhas -->
+
+<!-- ══ ABA TRÁFEGO ORGÂNICO ══════════════════════════════════════════════ -->
+<div class="pane" id="pane-organico">
+
+  <div class="filter">
+    <span class="filter-label">Período</span>
+    <button class="filter-btn active" onclick="setSCPeriod('all',this)">Tudo</button>
+    <button class="filter-btn" onclick="setSCPeriod('11',this)">Nov/25</button>
+    <button class="filter-btn" onclick="setSCPeriod('12',this)">Dez/25</button>
+    <button class="filter-btn" onclick="setSCPeriod('01',this)">Jan/26</button>
+    <button class="filter-btn" onclick="setSCPeriod('02',this)">Fev/26</button>
+    <button class="filter-btn" onclick="setSCPeriod('03',this)">Mar/26</button>
+    <button class="filter-btn" onclick="setSCPeriod('04',this)">Abr/26</button>
+    <button class="filter-btn" onclick="setSCPeriod('05',this)">Mai/26</button>
+    <span class="filter-period" id="sc-period-label">Nov/2025 – Mai/2026</span>
+  </div>
+
+  <!-- SC KPIs -->
+  <div class="section-header">
+    <span class="section-marker sc"></span>
+    <h2>bustaeamaraladvogados.com.br</h2>
+  </div>
+  <div class="kpis" id="sc-kpis"></div>
+
+  <!-- SC Charts -->
+  <div class="chart-grid">
+    <div class="chart-box">
+      <div class="chart-box-title">Cliques e impressões orgânicas</div>
+      <div class="chart-wrap"><canvas id="sc-trend"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-box-title">Posição média e CTR orgânico</div>
+      <div class="chart-wrap"><canvas id="sc-pos"></canvas></div>
+    </div>
+  </div>
+
+  <!-- SC Table -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-sc">Search Console</span> Principais termos de busca</div>
+    <table>
+      <thead><tr><th>#</th><th>Termo</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th>Posição</th></tr></thead>
+      <tbody id="sc-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- SC Analysis -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title"><span class="badge badge-sc">Análise</span> Tráfego Orgânico</div>
+    <div class="analysis-grid">
+      <div class="analysis-item pos"><div class="ai-label">✓ Crescimento</div><div class="ai-title">+1.576% em impressões</div><div class="ai-body">De 520 em nov/25 para 8.714 em mai/26 — o Google exibe o site para cada vez mais pessoas.</div></div>
+      <div class="analysis-item pos"><div class="ai-label">✓ Marca forte</div><div class="ai-title">185 cliques com CTR de 40%</div><div class="ai-body">Quem busca "Busta e Amaral Advogados" clica quase sempre — reconhecimento de marca crescendo.</div></div>
+      <div class="analysis-item warn"><div class="ai-label">⚠ Atenção</div><div class="ai-title">CTR das páginas de conteúdo ~1%</div><div class="ai-body">Página de Baixa de Hipoteca tem 8.839 impressões e CTR de apenas 1,1% — reescrever o title tag pode dobrar os cliques.</div></div>
+      <div class="analysis-item warn"><div class="ai-label">⚠ Atenção</div><div class="ai-title">Posição média piorou em maio</div><div class="ai-body">De 4,7 em março para 6,4 em maio — mais termos indexados diluem a média, mas monitorar páginas estratégicas individualmente.</div></div>
+      <div class="analysis-item rec"><div class="ai-label">→ Ação</div><div class="ai-title">Otimizar title tags das principais páginas</div><div class="ai-body">Reescrever os títulos focando no problema do usuário — "Seu INCC foi cobrado errado? Saiba como reaver" converte mais.</div></div>
+      <div class="analysis-item rec"><div class="ai-label">→ Ação</div><div class="ai-title">Publicar conteúdo sobre INCC regularmente</div><div class="ai-body">"incc" está na posição 1,9 com 283 impressões e apenas 4 cliques — artigos sobre tabelas e cálculos capturam quem pesquisa antes de contratar.</div></div>
+    </div>
+  </div>
+
+</div><!-- /pane-organico -->
+
+
+<!-- ══ ABA BLOG ══════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-blog">
+
+  <div class="section-header">
+    <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="8" fill="#21759b"/><path d="M10 13h28v4H10zm0 9h28v4H10zm0 9h18v4H10z" fill="white"/><circle cx="37" cy="31" r="5" fill="#f4a400"/><path d="M35 31l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h2>Produção de Conteúdo — Blog</h2>
+    <span class="sh-sub">nov/2025 – jun/2026 · 56 posts publicados</span>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis" style="margin-bottom:24px">
+    <div class="kpi"><div class="label">Total de posts</div><div class="value">56</div><div class="sub">nov/25–jun/26</div></div>
+    <div class="kpi"><div class="label">Média mensal</div><div class="value">7</div><div class="sub">posts/mês</div></div>
+    <div class="kpi"><div class="label">Tema principal</div><div class="value" style="font-size:1.1rem">INCC</div><div class="sub">29 posts (52%)</div></div>
+    <div class="kpi"><div class="label">Autores ativos</div><div class="value">3</div><div class="sub">Luiz · Gabriel · Julia</div></div>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-grid" style="margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-box-title">Posts por mês</div>
+      <div class="chart-wrap"><canvas id="blog-monthly"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-box-title">Distribuição por tema</div>
+      <div class="chart-wrap"><canvas id="blog-temas"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Author breakdown -->
+  <div class="chart-grid" style="margin-bottom:20px">
+    <div class="chart-box">
+      <div class="chart-box-title">Posts por autor</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="blog-autores"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-box-title">Temas por mês (empilhado)</div>
+      <div class="chart-wrap"><canvas id="blog-temas-mo"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Posts table -->
+  <div class="card">
+    <div class="card-title"><span class="badge badge-info">Blog</span> Todos os posts</div>
+    <table>
+      <thead><tr>
+        <th>Data</th><th>Título</th><th>Autor</th><th>Tema</th>
+      </tr></thead>
+      <tbody id="blog-tbody"></tbody>
+    </table>
+  </div>
+
+</div><!-- /pane-blog -->
+
+<div class="footer">
+  Fonte: Windsor.ai · Google Search Console · Gerado em <span id="gen-date"></span>
+</div>
+
+<script>
+// ══ DATA ══════════════════════════════════════════════════════════════════
+
+const PERIODS = {
+  'all':'Jan/2026 – Mai/2026','01':'Janeiro/2026','02':'Fevereiro/2026',
+  '03':'Março/2026','04':'Abril/2026','05':'Maio/2026','06':'Junho/2026 (parcial 01–09)'
+};
+const MO = {'01':'Jan/26','02':'Fev/26','03':'Mar/26','04':'Abr/26','05':'Mai/26','06':'Jun/26 *'};
+
+// Google Ads — monthly totals
+const G_MO = {
+  '01':{ spend:248.45,  conv:0,   clicks:431,  impr:13484, cpa:null },
+  '02':{ spend:977.90,  conv:28,  clicks:1252, impr:27449, cpa:34.93 },
+  '03':{ spend:986.31,  conv:54,  clicks:1062, impr:15471, cpa:18.27 },
+  '04':{ spend:901.19,  conv:25,  clicks:887,  impr:7685,  cpa:36.05 },
+  '05':{ spend:510.69,  conv:35,  clicks:573,  impr:4852,  cpa:14.59 },
+  '06':{ spend:156.63,  conv:7,   clicks:96,   impr:844,   cpa:22.38 },
+};
+
+// Google Ads — campaigns (for table)
+const G_CAMPS = [
+  { name:'[INCC] Performance Max', m:{'01':{s:81.96,c:0,k:222,i:6442},'02':{s:180.70,c:5,k:225,i:7108},'03':{s:280.98,c:23,k:575,i:8853},'04':{s:230.41,c:5,k:290,i:1834},'05':{s:279.98,c:24,k:172,i:2789},'06':{s:83.72,c:7,k:34,i:438}} },
+  { name:'[INCC] Search',          m:{'01':{s:166.50,c:0,k:209,i:7042},'02':{s:575.49,c:18,k:399,i:7581},'03':{s:621.71,c:29,k:395,i:4651},'04':{s:463.07,c:16,k:351,i:3885},'05':{s:121.09,c:5,k:288,i:1009},'06':{s:20.93,c:0,k:26,i:140}} },
+  { name:'[BaixaHipoteca] Search', m:{'04':{s:86.36,c:2,k:68,i:715},'05':{s:102.80,c:6,k:99,i:937},'06':{s:51.97,c:0,k:36,i:266}} },
+  { name:'[Distrato] Search',      m:{'02':{s:18.20,c:1,k:4,i:314},'03':{s:55.37,c:0,k:32,i:1007},'04':{s:121.35,c:2,k:178,i:1251},'05':{s:6.82,c:0,k:14,i:116}} },
+  { name:'[Atraso Obras] Search',  m:{'02':{s:7.24,c:0,k:12,i:447},'03':{s:28.24,c:2,k:60,i:960}} },
+  { name:'[INCC] Display',         m:{'02':{s:196.27,c:4,k:612,i:11999}} },
+];
+
+// Meta Ads — monthly totals
+const M_MO = {
+  '02':{ spend:215.30, clicks:1235, impr:22057,  reach:15000, cpm:9.76,  cpc:0.17 },
+  '03':{ spend:707.15, clicks:2459, impr:68770,  reach:48455, cpm:10.28, cpc:0.29 },
+  '04':{ spend:611.72, clicks:1233, impr:45013,  reach:28000, cpm:13.59, cpc:0.50 },
+  '05':{ spend:976.93, clicks:653,  impr:22037,  reach:11771, cpm:44.33, cpc:1.50 },
+  '06':{ spend:693.01, clicks:599,  impr:36112,  reach:25888, cpm:19.19, cpc:1.16 },
+};
+
+// Meta Ads — campaigns
+const M_CAMPS = [
+  { name:'Engajamento INCC Luiz',         mos:['02','03','04'], spend:1063.47, clicks:3299, impr:76918, reach:40000 },
+  { name:'Remarketing Site + IG 180D',    mos:['02','03','04'], spend:170.10,  clicks:284,  impr:3669,  reach:2800  },
+  { name:'Lista E-mail + Look a Like',    mos:['02','03'],      spend:190.26,  clicks:571,  impr:10778, reach:8200  },
+  { name:'INCC LISTA E 1% - Vídeos',      mos:['04','05'],      spend:869.72,  clicks:185,  impr:13487, reach:5392  },
+  { name:'Remarketing View Video 25-100%',mos:['04','05'],      spend:247.30,  clicks:582,  impr:6655,  reach:4800  },
+  { name:'Foco Endereços Lista 01',       mos:['05'],           spend:60.99,   clicks:16,   impr:2364,  reach:1928  },
+  { name:'Foco Endereços Lista 02',       mos:['05'],           spend:64.44,   clicks:23,   impr:2058,  reach:1612  },
+  { name:'Remarketing View Video (Jun)',   mos:['06'],           spend:66.07,   clicks:210,  impr:1556,  reach:1380  },
+  { name:'Foco Endereços Lista 01 (Jun)',  mos:['06'],           spend:205.81,  clicks:135,  impr:12182, reach:8448  },
+  { name:'Foco Endereços Lista 02 (Jun)',  mos:['06'],           spend:421.13,  clicks:254,  impr:22374, reach:16060 },
+];
+
+// Search Console
+const SC_MO = [
+  { mo:'11', label:'Nov/25', clicks:119,  impr:520,   ctr:22.88, pos:5.00 },
+  { mo:'12', label:'Dez/25', clicks:36,   impr:556,   ctr:6.47,  pos:4.60 },
+  { mo:'01', label:'Jan/26', clicks:89,   impr:2214,  ctr:4.02,  pos:4.45 },
+  { mo:'02', label:'Fev/26', clicks:110,  impr:4937,  ctr:2.23,  pos:5.45 },
+  { mo:'03', label:'Mar/26', clicks:176,  impr:9326,  ctr:1.89,  pos:4.78 },
+  { mo:'04', label:'Abr/26', clicks:167,  impr:10709, ctr:1.56,  pos:5.22 },
+  { mo:'05', label:'Mai/26', clicks:175,  impr:8714,  ctr:2.01,  pos:6.44 },
+];
+const SC_QUERIES = [
+  { q:'busta e amaral advogados',               clicks:185, impr:463,   ctr:39.96, pos:3.29  },
+  { q:'baixa de hipoteca',                      clicks:99,  impr:8839,  ctr:1.12,  pos:5.49  },
+  { q:'incc cobrança indevida',                 clicks:97,  impr:3329,  ctr:2.91,  pos:6.32  },
+  { q:'incc indevido cobrança abusiva',         clicks:91,  impr:3856,  ctr:2.36,  pos:3.88  },
+  { q:'incc',                                   clicks:4,   impr:283,   ctr:1.41,  pos:1.89  },
+  { q:'o que é baixa de hipoteca',              clicks:1,   impr:119,   ctr:0.84,  pos:6.99  },
+  { q:'baixa de hipoteca de imóvel quitado',    clicks:1,   impr:88,    ctr:1.14,  pos:4.67  },
+  { q:'incc acumulado 12 meses',                clicks:1,   impr:41,    ctr:2.44,  pos:3.06  },
+  { q:'incc x ipca',                            clicks:1,   impr:13,    ctr:7.69,  pos:4.90  },
+  { q:'como saber se a oab é verdadeira',       clicks:1,   impr:61,    ctr:1.64,  pos:7.85  },
+  { q:'incc de março 2026',                     clicks:1,   impr:20,    ctr:5.00,  pos:1.32  },
+  { q:'incc tabela',                            clicks:1,   impr:3,     ctr:33.33, pos:5.33  },
+];
+
+// Analysis by period
+const ANALYSIS = {
+  'all':{
+    pos:[
+      { t:'Maio foi o mês mais eficiente do Google', b:'35 contatos com custo de R$ 14,59 cada — o mais baixo da série. Campanhas maduras entregando mais com menos.' },
+      { t:'Remarketing Meta com CTR de 10,4%', b:'429 cliques com R$ 175 investidos e CPC de R$ 0,41 em maio — a audiência quente respondendo muito bem.' },
+      { t:'Crescimento orgânico de +1.576%', b:'De 520 impressões em nov/25 para 8.714 em mai/26 — o site está sendo encontrado cada vez mais sem custo adicional.' },
+    ],
+    warn:[
+      
+      
+      { t:'[INCC] Search perdeu eficiência em maio', b:'CPA subiu para R$ 24,22 com apenas 5 contatos — auditar termos de busca que consomem budget sem converter.' },
+    ],
+    rec:[
+      
+      { t:'Escalar Performance Max', b:'R$ 11,67 por contato com 24 conversões em maio — campanha validada. Aumentar 30% e monitorar por 15 dias.' },
+      
+    ]
+  },
+  '02':{
+    pos:[{t:'Primeiros 28 contatos no Google',b:'CPA de R$ 34,93 — bom resultado para o segundo mês de operação.'},{t:'Estreia Meta com 19.346 pessoas alcançadas',b:'CPM eficiente de R$ 9–21 no primeiro mês Meta.'}],
+    warn:[{t:'Performance Max sem resultados em janeiro',b:'R$ 82 investidos sem conversões — normal no período de aprendizado do algoritmo.'},{t:'Retenção de vídeo Meta de 1,2%',b:'Público para de assistir cedo — testar versões mais curtas.'}],
+    rec:[{t:'Escalar Search',b:'18 contatos no segundo mês é sinal forte. Aumentar budget 20–30%.'},{t:'Testar vídeos mais curtos no Meta',b:'Retenção baixa sugere que o conteúdo é longo demais.'}]
+  },
+  '03':{
+    pos:[{t:'Melhor mês Google em volume: 54 contatos',b:'CPA de R$ 18,27 — queda de 47% em relação a fevereiro. Campanhas em plena maturidade.'},{t:'Alcance Meta saltou para 48.455 pessoas',b:'+150% em relação a fevereiro.'}],
+    warn:[{t:'[Distrato de Imóvel] estreou sem contatos',b:'Normal no primeiro mês — aguardar aprendizado.'}],
+    rec:[{t:'Usar março como benchmark',b:'Search + Performance Max nessa proporção foi a combinação mais eficiente da série.'}]
+  },
+  '04':{
+    pos:[{t:'CTR Google recorde de 11,54%',b:'1 em cada 10 que viram o anúncio clicou — excelente relevância.'},{t:'[BaixaHipoteca] estreou com 2 contatos',b:'Nova frente validada no primeiro mês.'}],
+    warn:[{t:'CPA Google subiu para R$ 36,05',b:'De R$ 18,27 em março — verificar se budget diário está se esgotando antes do fim do dia.'},{t:'Meta sem conversões rastreadas',b:'Pixel não instalado — investimento sem rastreamento de resultado.'}],
+    rec:[{t:'Investigar queda de impressões',b:'CTR alto com impressões caindo sugere limitação de budget diário.'},{t:'Instalar pixel Meta agora',b:'Com Remarketing por vídeo ativo, este é o momento ideal.'}]
+  },
+  '05':{
+    pos:[{t:'Melhor CPA Google da série: R$ 14,59',b:'35 contatos com R$ 510 — budget menor, eficiência maior. Performance Max gerou 24 dos 35 contatos.'},{t:'Remarketing Meta com CTR de 10,4%',b:'Audiência que assistiu os vídeos está respondendo muito bem.'}],
+    warn:[{t:'[INCC] Search com CPA de R$ 24,22',b:'Apenas 5 contatos com R$ 121 — auditar termos de busca e negativar os ineficientes.'},{t:'R$ 977 Meta sem contatos rastreados',b:'Pixel não instalado — impossível medir retorno real.'}],
+    rec:[{t:'Aumentar budget Performance Max',b:'R$ 11,67 por contato validado — aumentar 20–30% e monitorar.'},{t:'Pausar [Distrato de Imóvel]',b:'2 meses consecutivos sem resultado.'}]
+  }
+};
+
+// ══ STATE ═════════════════════════════════════════════════════════════════
+let period = 'all';
+let scPeriod = 'all';
+const charts = {};
+
+// ══ HELPERS ═══════════════════════════════════════════════════════════════
+const fR  = n => n==null?'—':'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fR2 = n => n==null?'—':'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fN  = n => n==null?'—':Number(n).toLocaleString('pt-BR');
+const fP  = n => n==null?'—':Number(n).toFixed(2)+'%';
+const MONTHS = ['01','02','03','04','05','06'];
+const COLORS = ['#2451a8','#34a853','#f4a400','#c85a20','#7b3fa0','#1877f2'];
+
+function gData() {
+  return period==='all' ? MONTHS.map(m=>({mo:m,...G_MO[m]})).filter(d=>d.spend) : [G_MO[period] ? {mo:period,...G_MO[period]} : null].filter(Boolean);
+}
+function mData() {
+  const mos = period==='all' ? ['02','03','04','05','06'] : (M_MO[period] ? [period] : []);
+  return mos.map(m=>({mo:m,...M_MO[m]}));
+}
+
+// ══ RENDER GOOGLE ═════════════════════════════════════════════════════════
+function renderGoogle() {
+  const data = gData();
+  if(!data.length) { document.getElementById('g-kpis').innerHTML='<div class="kpi"><div class="label">Sem dados</div><div class="value">—</div></div>'; return; }
+
+  const tot = data.reduce((a,d)=>({spend:a.spend+d.spend,conv:a.conv+d.conv,clicks:a.clicks+d.clicks,impr:a.impr+d.impr}),{spend:0,conv:0,clicks:0,impr:0});
+  const cpa  = tot.conv>0 ? tot.spend/tot.conv : null;
+  const ctr  = tot.clicks/tot.impr*100;
+  const cpc  = tot.spend/tot.clicks;
+
+  // Avg last 3 months spend
+  const last3 = MONTHS.slice(-3).filter(m=>G_MO[m]).map(m=>G_MO[m].spend);
+  const avg3  = last3.reduce((a,b)=>a+b,0)/last3.length;
+
+  document.getElementById('g-kpis').innerHTML = `
+    <div class="kpi"><div class="label">Invest. médio (últ. 3 meses)</div><div class="value">${fR(avg3)}</div><div class="sub">Abr · Mai · Jun/26 *</div></div>
+    <div class="kpi"><div class="label">Contatos gerados</div><div class="value">${fN(tot.conv)}</div><div class="sub">${period==='all'?'jan–mai/26':PERIODS[period]}</div></div>
+    <div class="kpi"><div class="label">Custo por contato</div><div class="value">${fR2(cpa)}</div><div class="sub">${cpa&&cpa<20?'🟢 Ótimo':cpa&&cpa<35?'🟡 Bom':'🔴 Atenção'}</div></div>
+    <div class="kpi"><div class="label">CTR médio</div><div class="value">${fP(ctr)}</div><div class="sub">CPC ${fR2(cpc)}</div></div>
+  `;
+  document.getElementById('g-period-title').textContent = period==='all'?'Jan–Mai/2026':PERIODS[period];
+
+  // Bar chart
+  const months = period==='all' ? MONTHS.filter(m=>G_MO[m]) : [period];
+  const campKeys = G_CAMPS.filter(c=>months.some(m=>c.m[m]));
+  const datasets = campKeys.map((c,i)=>({
+    label: c.name.replace(/\[|\]/g,'').trim(),
+    data: months.map(m=>c.m[m]?.s||0),
+    backgroundColor: COLORS[i]+'cc',
+    borderColor: COLORS[i],
+    borderWidth: 1,
+    borderRadius: 3,
+  }));
+
+  // Stack totals plugin — draws total above each stacked bar
+  const stackTotalsPlugin = {
+    id:'stackTotals',
+    afterDatasetsDraw(chart){
+      const {ctx, data, scales:{x,y}} = chart;
+      const nDatasets = chart.data.datasets.length;
+      const nPoints   = chart.data.datasets[0].data.length;
+      for(let i=0;i<nPoints;i++){
+        let total = 0;
+        for(let ds=0;ds<nDatasets;ds++){
+          total += chart.data.datasets[ds].data[i]||0;
+        }
+        if(!total) continue;
+        const meta = chart.getDatasetMeta(nDatasets-1);
+        const bar  = meta.data[i];
+        ctx.save();
+        ctx.fillStyle = '#555';
+        ctx.font = 'bold 10px Inter,-apple-system,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('R$'+Math.round(total), bar.x, bar.y - 6);
+        ctx.restore();
+      }
+    }
+  };
+
+  if(charts.gBar) charts.gBar.destroy();
+  charts.gBar = new Chart(document.getElementById('g-bar').getContext('2d'),{
+    type:'bar',
+    data:{labels:months.map(m=>MO[m]),datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:20}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+fR2(c.parsed.y)}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,ticks:{callback:v=>'R$'+Math.round(v/1000)+'k',font:{size:10}},grid:{color:'#f0ede8'}}}},
+    plugins:[stackTotalsPlugin]
+  });
+
+  // Point labels plugin — draws values on each line point
+  const pointLabelsPlugin = {
+    id:'pointLabels',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      chart.data.datasets.forEach((ds,di)=>{
+        const meta = chart.getDatasetMeta(di);
+        meta.data.forEach((pt,i)=>{
+          const val = ds.data[i];
+          if(val==null) return;
+          const isLeft = di===0;
+          const label  = isLeft ? 'R$'+val.toFixed(0) : val.toFixed(1)+'%';
+          const color  = isLeft ? '#c85a20' : '#2451a8';
+          ctx.save();
+          ctx.fillStyle = color;
+          ctx.font = 'bold 9px Inter,-apple-system,sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(label, pt.x, pt.y - 9);
+          ctx.restore();
+        });
+      });
+    }
+  };
+
+  // Metrics chart
+  const cpaVals = months.map(m=>G_MO[m]?.cpa||null);
+  const ctrVals2 = months.map(m=>G_MO[m]?G_MO[m].clicks/G_MO[m].impr*100:null);
+  if(charts.gMetrics) charts.gMetrics.destroy();
+  charts.gMetrics = new Chart(document.getElementById('g-metrics').getContext('2d'),{
+    type:'line',
+    data:{labels:months.map(m=>MO[m]),datasets:[
+      {label:'Custo/contato (R$)',data:cpaVals,borderColor:'#c85a20',backgroundColor:'#c85a2015',fill:true,tension:0.3,pointRadius:5,pointBackgroundColor:'#c85a20',yAxisID:'y'},
+      {label:'CTR (%)',data:ctrVals2,borderColor:'#2451a8',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#2451a8',yAxisID:'y2',borderDash:[5,3]},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:20}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.yAxisID==='y2'?` CTR: ${c.parsed.y?.toFixed(2)}%`:` CPA: ${fR2(c.parsed.y)}`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{position:'left',ticks:{callback:v=>'R$'+v,font:{size:10}},grid:{color:'#f0ede8'}},
+        y2:{position:'right',ticks:{callback:v=>v?.toFixed(1)+'%',font:{size:10}},grid:{display:false}}}},
+    plugins:[pointLabelsPlugin]
+  });
+
+  // Table
+  const tbody = document.getElementById('g-tbody');
+  tbody.innerHTML = '';
+  G_CAMPS.forEach(c=>{
+    const mos = period==='all'?MONTHS:([period]);
+    const agg = mos.reduce((a,m)=>{const d=c.m[m];if(!d)return a;return{s:a.s+d.s,c:a.c+d.c,k:a.k+d.k,i:a.i+d.i};},{s:0,c:0,k:0,i:0});
+    if(!agg.s) return;
+    const cpa2 = agg.c>0?agg.s/agg.c:null;
+    const ctr2 = agg.k>0?agg.k/agg.i*100:0;
+    const cpc2 = agg.k>0?agg.s/agg.k:0;
+    tbody.innerHTML += `<tr>
+      <td class="td-strong">${c.name.replace(/\[|\]/g,'').trim()}</td>
+      <td>${fR2(agg.s)}</td>
+      <td>${agg.c>0?'<span class="td-up">'+agg.c+'</span>':'<span class="td-muted">0</span>'}</td>
+      <td>${cpa2?'<span class="'+(cpa2<20?'td-up':cpa2<35?'':'td-down')+'">'+fR2(cpa2)+'</span>':'<span class="td-muted">—</span>'}</td>
+      <td>${fN(agg.k)}</td>
+      <td>${fP(ctr2)}</td>
+      <td>${fR2(cpc2)}</td>
+    </tr>`;
+  });
+}
+
+// ══ RENDER META ═══════════════════════════════════════════════════════════
+function renderMeta() {
+  const data = mData();
+  if(!data.length) { document.getElementById('m-kpis').innerHTML='<div class="kpi"><div class="label">Sem dados Meta</div><div class="value">—</div></div>'; return; }
+
+  const tot = data.reduce((a,d)=>({spend:a.spend+d.spend,clicks:a.clicks+d.clicks,impr:a.impr+d.impr,reach:a.reach+d.reach}),{spend:0,clicks:0,impr:0,reach:0});
+  const cpm2 = tot.spend/tot.impr*1000;
+  const cpc2 = tot.spend/tot.clicks;
+
+  // Avg last 3 months Meta
+  const mLast3 = ['04','05','06'].filter(m=>M_MO[m]).map(m=>M_MO[m].spend);
+  const mAvg3  = mLast3.reduce((a,b)=>a+b,0)/mLast3.length;
+
+  document.getElementById('m-kpis').innerHTML = `
+    <div class="kpi"><div class="label">Invest. médio (últ. 3 meses)</div><div class="value">${fR(mAvg3)}</div><div class="sub">Abr · Mai · Jun/26 *</div></div>
+    <div class="kpi"><div class="label">Alcance total</div><div class="value">${fN(tot.reach)}</div><div class="sub">pessoas únicas</div></div>
+    <div class="kpi"><div class="label">CPM médio</div><div class="value">${fR2(cpm2)}</div><div class="sub">${cpm2<20?'🟢 Eficiente':cpm2<40?'🟡 Moderado':'🔴 Alto'}</div></div>
+    <div class="kpi"><div class="label">Conversões rastreadas</div><div class="value td-muted">—</div><div class="sub">Em configuração</div></div>
+  `;
+  document.getElementById('m-period-title').textContent = period==='all'?'Fev–Jun/2026':(PERIODS[period]||'—');
+
+  const mos = data.map(d=>d.mo);
+
+  // Bar totalizador plugin — label on top of each bar
+  const mBarTotalsPlugin = {
+    id:'mBarTotals',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      const meta = chart.getDatasetMeta(0);
+      meta.data.forEach((bar,i)=>{
+        const val = chart.data.datasets[0].data[i];
+        if(!val) return;
+        ctx.save();
+        ctx.fillStyle='#555';
+        ctx.font='bold 10px Inter,-apple-system,sans-serif';
+        ctx.textAlign='center';
+        ctx.fillText('R$'+Math.round(val), bar.x, bar.y-6);
+        ctx.restore();
+      });
+    }
+  };
+
+  // Line point labels plugin for Meta metrics
+  const mPointLabelsPlugin = {
+    id:'mPointLabels',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      chart.data.datasets.forEach((ds,di)=>{
+        const meta = chart.getDatasetMeta(di);
+        meta.data.forEach((pt,i)=>{
+          const val = ds.data[i];
+          if(val==null) return;
+          const label = 'R$'+val.toFixed(di===0?0:2);
+          const color = di===0?'#a07010':'#c85a20';
+          ctx.save();
+          ctx.fillStyle=color;
+          ctx.font='bold 9px Inter,-apple-system,sans-serif';
+          ctx.textAlign='center';
+          ctx.fillText(label, pt.x, pt.y-9);
+          ctx.restore();
+        });
+      });
+    }
+  };
+
+  // Bar
+  if(charts.mBar) charts.mBar.destroy();
+  charts.mBar = new Chart(document.getElementById('m-bar').getContext('2d'),{
+    type:'bar',
+    data:{labels:mos.map(m=>MO[m]),datasets:[
+      {label:'Investimento',data:data.map(d=>d.spend),backgroundColor:'#1877f2cc',borderColor:'#1877f2',borderWidth:1,borderRadius:3,yAxisID:'y'},
+      {label:'Alcance',data:data.map(d=>d.reach),type:'line',borderColor:'#34a853',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#34a853',yAxisID:'y2'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:20}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.yAxisID==='y2'?` Alcance: ${fN(c.parsed.y)}`:` Investimento: ${fR2(c.parsed.y)}`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{position:'left',ticks:{callback:v=>'R$'+Math.round(v),font:{size:10}},grid:{color:'#f0ede8'}},
+        y2:{position:'right',ticks:{callback:v=>fN(v),font:{size:10}},grid:{display:false}}}},
+    plugins:[mBarTotalsPlugin]
+  });
+
+  // Metrics
+  if(charts.mMetrics) charts.mMetrics.destroy();
+  charts.mMetrics = new Chart(document.getElementById('m-metrics').getContext('2d'),{
+    type:'line',
+    data:{labels:mos.map(m=>MO[m]),datasets:[
+      {label:'CPM (R$)',data:data.map(d=>d.cpm),borderColor:'#f4a400',backgroundColor:'#f4a40015',fill:true,tension:0.3,pointRadius:5,pointBackgroundColor:'#f4a400',yAxisID:'y'},
+      {label:'CPC (R$)',data:data.map(d=>d.cpc),borderColor:'#c85a20',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#c85a20',yAxisID:'y2',borderDash:[5,3]},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:20}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{position:'left',ticks:{callback:v=>'R$'+v.toFixed(0),font:{size:10}},grid:{color:'#f0ede8'}},
+        y2:{position:'right',ticks:{callback:v=>'R$'+v.toFixed(2),font:{size:10}},grid:{display:false}}}},
+    plugins:[mPointLabelsPlugin]
+  });
+
+  // Table
+  const tbody = document.getElementById('m-tbody');
+  tbody.innerHTML = '';
+  M_CAMPS.forEach(c=>{
+    const active = period==='all' || c.mos.includes(period);
+    if(!active) return;
+    const ctr2 = c.impr>0?c.clicks/c.impr*100:0;
+    const cpm3 = c.impr>0?c.spend/c.impr*1000:0;
+    tbody.innerHTML += `<tr>
+      <td class="td-strong">${c.name}</td>
+      <td>${c.mos.map(m=>`<span class="pill">${MO[m]||m}</span>`).join(' ')}</td>
+      <td>${fR2(c.spend)}</td>
+      <td>${fN(c.reach)}</td>
+      <td>${fN(c.impr)}</td>
+      <td>${fN(c.clicks)}</td>
+      <td>${fP(ctr2)}</td>
+      <td>${fR2(cpm3)}</td>
+    </tr>`;
+  });
+}
+
+// ══ RENDER ANALYSIS ═══════════════════════════════════════════════════════
+function renderAnalysis() {
+  const A = ANALYSIS[period] || ANALYSIS['all'];
+  document.getElementById('a-title').textContent = period==='all'?'Jan–Mai/2026':PERIODS[period];
+  document.getElementById('analysis-content').innerHTML = `
+    <div class="analysis-grid" style="margin-bottom:14px">
+      ${A.pos.map(a=>`<div class="analysis-item pos"><div class="ai-label">✓ Positivo</div><div class="ai-title">${a.t}</div><div class="ai-body">${a.b}</div></div>`).join('')}
+    </div>
+    <div class="analysis-grid" style="margin-bottom:14px">
+      ${A.warn.map(a=>`<div class="analysis-item warn"><div class="ai-label">⚠ Atenção</div><div class="ai-title">${a.t}</div><div class="ai-body">${a.b}</div></div>`).join('')}
+    </div>
+    <div class="analysis-grid">
+      ${A.rec.map(a=>`<div class="analysis-item rec"><div class="ai-label">→ Ação</div><div class="ai-title">${a.t}</div><div class="ai-body">${a.b}</div></div>`).join('')}
+    </div>
+  `;
+}
+
+// ══ RENDER SEARCH CONSOLE ═════════════════════════════════════════════════
+let scInited = false;
+function renderSC() {
+  const data = scPeriod==='all' ? SC_MO : SC_MO.filter(d=>d.mo===scPeriod);
+  if(!data.length) return;
+
+  const totClicks = data.reduce((s,d)=>s+d.clicks,0);
+  const totImpr   = data.reduce((s,d)=>s+d.impr,0);
+  const lastPos   = data[data.length-1].pos;
+  const lastCtr   = data[data.length-1].ctr;
+  const firstJan  = SC_MO.find(d=>d.mo==='01');
+  const imprDelta = firstJan ? Math.round((data[data.length-1].impr/firstJan.impr-1)*100) : null;
+
+  document.getElementById('sc-kpis').innerHTML = `
+    <div class="kpi"><div class="label">Cliques orgânicos</div><div class="value">${fN(totClicks)}</div><div class="sub">${scPeriod==='all'?'nov/25–mai/26':data[0].label}</div></div>
+    <div class="kpi"><div class="label">Impressões totais</div><div class="value">${fN(totImpr)}</div><div class="sub">${imprDelta!=null&&scPeriod==='all'?'+'+imprDelta+'% vs jan/26':''}</div></div>
+    <div class="kpi"><div class="label">Posição média atual</div><div class="value">${lastPos.toFixed(1)}°</div><div class="sub" style="color:${lastPos<5?'#2a7a4a':'#c85a20'}">${lastPos<5?'🟢 Top 5':'⚠ Abaixo do top 5'}</div></div>
+    <div class="kpi"><div class="label">CTR orgânico</div><div class="value">${lastCtr.toFixed(1)}%</div><div class="sub">${lastCtr>3?'🟢 Acima da média':'🟡 Pode melhorar'}</div></div>
+  `;
+
+  // SC point labels plugins
+  const scTrendLabels = {
+    id:'scTrendLabels',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      // Label cliques (dataset 1 = line)
+      const meta = chart.getDatasetMeta(1);
+      meta.data.forEach((pt,i)=>{
+        const val = chart.data.datasets[1].data[i];
+        if(val==null) return;
+        ctx.save();
+        ctx.fillStyle='#1a7a3a';
+        ctx.font='bold 9px Inter,-apple-system,sans-serif';
+        ctx.textAlign='center';
+        ctx.fillText(val, pt.x, pt.y-9);
+        ctx.restore();
+      });
+    }
+  };
+
+  const scPosLabels = {
+    id:'scPosLabels',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      chart.data.datasets.forEach((ds,di)=>{
+        const meta = chart.getDatasetMeta(di);
+        meta.data.forEach((pt,i)=>{
+          const val = ds.data[i];
+          if(val==null) return;
+          const label = di===0 ? val.toFixed(1)+'°' : val.toFixed(1)+'%';
+          const color = di===0 ? '#a07010' : '#2a7a4a';
+          ctx.save();
+          ctx.fillStyle=color;
+          ctx.font='bold 9px Inter,-apple-system,sans-serif';
+          ctx.textAlign='center';
+          ctx.fillText(label, pt.x, pt.y-9);
+          ctx.restore();
+        });
+      });
+    }
+  };
+
+  // SC Trend chart
+  if(charts.scTrend) charts.scTrend.destroy();
+  charts.scTrend = new Chart(document.getElementById('sc-trend').getContext('2d'),{
+    type:'bar',
+    data:{labels:data.map(d=>d.label),datasets:[
+      {label:'Impressões',data:data.map(d=>d.impr),backgroundColor:'#34a85330',borderColor:'#34a853',borderWidth:1.5,borderRadius:3,yAxisID:'y2'},
+      {label:'Cliques',type:'line',data:data.map(d=>d.clicks),borderColor:'#1a7a3a',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#1a7a3a',borderWidth:2.5,yAxisID:'y'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:20}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fN(c.parsed.y)}`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{position:'left',beginAtZero:true,ticks:{font:{size:10}},grid:{color:'#f0ede8'}},
+        y2:{position:'right',beginAtZero:true,ticks:{font:{size:10}},grid:{display:false}}}},
+    plugins:[scTrendLabels]
+  });
+
+  // SC Pos chart
+  if(charts.scPos) charts.scPos.destroy();
+  charts.scPos = new Chart(document.getElementById('sc-pos').getContext('2d'),{
+    type:'line',
+    data:{labels:data.map(d=>d.label),datasets:[
+      {label:'Posição média',data:data.map(d=>d.pos),borderColor:'#f4a400',backgroundColor:'rgba(244,164,0,0.07)',fill:true,tension:0.3,pointRadius:5,pointBackgroundColor:'#f4a400',borderWidth:2.5,yAxisID:'y'},
+      {label:'CTR (%)',data:data.map(d=>d.ctr),borderColor:'#34a853',backgroundColor:'transparent',tension:0.3,pointRadius:5,pointBackgroundColor:'#34a853',borderWidth:2,yAxisID:'y2'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:20}},
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.yAxisID==='y2'?` CTR: ${c.parsed.y?.toFixed(2)}%`:` Posição: ${c.parsed.y?.toFixed(2)}°`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+        y:{position:'left',reverse:true,min:1,suggestedMax:12,ticks:{callback:v=>v+'°',font:{size:10}},grid:{color:'#f0ede8'}},
+        y2:{position:'right',min:0,suggestedMax:Math.ceil(Math.max(...data.map(d=>d.ctr))/5)*5+5,ticks:{callback:v=>v+'%',font:{size:10}},grid:{display:false}}}},
+    plugins:[scPosLabels]
+  });
+
+  // SC Table
+  const tbody = document.getElementById('sc-tbody');
+  tbody.innerHTML = '';
+  SC_QUERIES.forEach((q,i)=>{
+    const posColor = q.pos<=3?'#2a7a4a':q.pos<=10?'#7a6010':'#c85a20';
+    tbody.innerHTML += `<tr>
+      <td class="td-muted">${i+1}</td>
+      <td style="font-weight:500">${q.q}</td>
+      <td class="${q.clicks>0?'td-strong':'td-muted'}">${q.clicks>0?q.clicks:'—'}</td>
+      <td>${fN(q.impr)}</td>
+      <td>${q.ctr>0?q.ctr.toFixed(2)+'%':'<span class="td-muted">0%</span>'}</td>
+      <td style="font-weight:600;color:${posColor}">${q.pos.toFixed(1)}°</td>
+    </tr>`;
+  });
+}
+
+
+// ══ BLOG DATA ══════════════════════════════════════════════════════════════
+const BLOG_POSTS = [
+  {date:'08/06/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de imóvel na planta: quando a construtora pode reter valores e quais são os direitos do comprador'},
+  {date:'01/06/2026',author:'Luiz',   tema:'INCC',            title:'Quais documentos preciso enviar para revisar a cobrança de INCC no imóvel na planta?'},
+  {date:'25/05/2026',author:'Luiz',   tema:'INCC',            title:'INCC cobrado mensalmente em imóvel na planta: entenda quando a cobrança pode ser abusiva'},
+  {date:'18/05/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de apartamento HIS ou HMP por falta de informação'},
+  {date:'18/05/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de imóvel na planta: alta do INCC pode tornar o contrato inviável?'},
+  {date:'15/05/2026',author:'Gabriel',tema:'Baixa de Hipoteca',title:'Baixa de hipoteca judicial: quando entrar com ação para regularizar o imóvel'},
+  {date:'13/05/2026',author:'Gabriel',tema:'Distrato',        title:'Multa no distrato de imóvel: quando a retenção pode ser abusiva'},
+  {date:'11/05/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Imóvel quitado, mas ainda com hipoteca na matrícula: entenda os riscos'},
+  {date:'08/05/2026',author:'Gabriel',tema:'Baixa de Hipoteca',title:'Construtora não baixa hipoteca: quem é responsável e o que fazer'},
+  {date:'06/05/2026',author:'Gabriel',tema:'Distrato',        title:'Distrato por culpa da construtora: quando o comprador pode pedir devolução integral'},
+  {date:'01/05/2026',author:'Gabriel',tema:'Baixa de Hipoteca',title:'Imóvel quitado com hipoteca na matrícula: quais riscos o comprador corre'},
+  {date:'29/04/2026',author:'Gabriel',tema:'Distrato',        title:'Distrato de imóvel: o que conferir antes de assinar qualquer termo'},
+  {date:'27/04/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Imóvel quitado com hipoteca na matrícula: como baixar a hipoteca e regularizar a escritura'},
+  {date:'24/04/2026',author:'Gabriel',tema:'INCC',            title:'INCC e atraso na entrega do imóvel: como combinar prova do atraso e revisão da cobrança'},
+  {date:'22/04/2026',author:'Gabriel',tema:'INCC',            title:'INCC e patrimônio de afetação: o que muda no distrato, nos prazos e na devolução de valores'},
+  {date:'16/04/2026',author:'Luiz',   tema:'INCC',            title:'Revisão de INCC: quando a cobrança é indevida e como recuperar valores pagos a mais'},
+  {date:'13/04/2026',author:'Luiz',   tema:'Distrato',        title:'Distrato de Imóvel na Planta: entenda seus direitos, limites de retenção'},
+  {date:'10/04/2026',author:'Gabriel',tema:'INCC',            title:'Dano moral por cobrança indevida de INCC'},
+  {date:'08/04/2026',author:'Gabriel',tema:'INCC',            title:'INCC após habite-se: quando a cobrança pode ser discutida'},
+  {date:'06/04/2026',author:'Luiz',   tema:'Outros',          title:'Invalidez permanente quita financiamento imobiliário?'},
+  {date:'03/04/2026',author:'Gabriel',tema:'INCC',            title:'Jurisprudência sobre INCC: o que os tribunais costumam analisar'},
+  {date:'01/04/2026',author:'Gabriel',tema:'INCC',            title:'Ação revisional de INCC: como funciona, quais provas pesam'},
+  {date:'30/03/2026',author:'Luiz',   tema:'Atraso na Obra',  title:'Atraso na entrega do imóvel: quando cabe indenização e lucros cessantes'},
+  {date:'23/03/2026',author:'Luiz',   tema:'Distrato',        title:'Construtora pode leiloar imóvel e não devolver nada?'},
+  {date:'20/03/2026',author:'Gabriel',tema:'INCC',            title:'INCC na entrega das chaves: como conferir o saldo residual'},
+  {date:'18/03/2026',author:'Gabriel',tema:'INCC',            title:'INCC em aditivos e renegociações: riscos de quitação, confissão de dívida'},
+  {date:'16/03/2026',author:'Luiz',   tema:'Outros',          title:'Imóvel entregue com metragem menor: quando a construtora deve indenizar'},
+  {date:'13/03/2026',author:'Gabriel',tema:'INCC',            title:'INCC e repasse/financiamento: o que muda no índice, no saldo e nos boletos'},
+  {date:'11/03/2026',author:'Gabriel',tema:'INCC',            title:'Como negociar INCC com a construtora antes de processar'},
+  {date:'06/03/2026',author:'Gabriel',tema:'INCC',            title:'Prazos para questionar INCC: o que observar e como organizar a linha do tempo'},
+  {date:'04/03/2026',author:'Gabriel',tema:'INCC',            title:'Restituição de INCC pago a maior: quando cabe devolução simples'},
+  {date:'02/03/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: Como Retirar o Gravame da Matrícula Após Quitar o Imóvel'},
+  {date:'20/02/2026',author:'Gabriel',tema:'INCC',            title:'Juros de obra e INCC: como entender a cobrança e conferir o saldo'},
+  {date:'18/02/2026',author:'Gabriel',tema:'INCC',            title:'Memória de cálculo do INCC: como exigir da incorporadora e como interpretar'},
+  {date:'13/02/2026',author:'Gabriel',tema:'Distrato',        title:'Distrato e INCC: como a correção influencia a devolução de valores'},
+  {date:'11/02/2026',author:'Gabriel',tema:'Atraso na Obra',  title:'Atraso na obra e INCC: o índice pode continuar sendo cobrado?'},
+  {date:'06/02/2026',author:'Gabriel',tema:'INCC',            title:'Devolução em dobro do INCC: quando pode acontecer e o que você precisa provar'},
+  {date:'04/02/2026',author:'Gabriel',tema:'INCC',            title:'INCC x IPCA: quando o índice muda e como questionar a cobrança'},
+  {date:'02/02/2026',author:'Luiz',   tema:'Distrato',        title:'Rescisão de Contrato com Alienação Fiduciária'},
+  {date:'02/02/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: Como Regularizar Imóvel Quitado'},
+  {date:'20/01/2026',author:'Luiz',   tema:'INCC',            title:'Cuidado ao assinar termo de abono ou aditivo com a construtora'},
+  {date:'19/01/2026',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Hipoteca ativa pode impedir o financiamento do imóvel?'},
+  {date:'12/01/2026',author:'Luiz',   tema:'INCC',            title:'JÁ QUITEI O IMÓVEL: AINDA POSSO PEDIR DEVOLUÇÃO DE INCC PAGO A MAIOR?'},
+  {date:'05/01/2026',author:'Luiz',   tema:'INCC',            title:'INCC após o Habite-se: quando a cobrança é abusiva'},
+  {date:'24/12/2025',author:'Gabriel',tema:'INCC',            title:'Cobrança indevida/abusiva de INCC: como identificar e recuperar valores pagos a mais'},
+  {date:'17/12/2025',author:'Gabriel',tema:'Atraso na Obra',  title:'Atraso na obra: como calcular a indenização e escolher o melhor caminho'},
+  {date:'15/12/2025',author:'Luiz',   tema:'INCC',            title:'Parcela simbólica no INCC: quando a cobrança é abusiva e pode ser anulada'},
+  {date:'08/12/2025',author:'Luiz',   tema:'Distrato',        title:'Distrato de Imóvel na Planta: Quais São os Direitos do Comprador em 2025?'},
+  {date:'01/12/2025',author:'Luiz',   tema:'INCC',            title:'Comprou imóvel na planta? Justiça manda incorporadoras devolverem valores cobrados a mais'},
+  {date:'01/12/2025',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: como regularizar o imóvel quitado e remover gravames da matrícula'},
+  {date:'28/11/2025',author:'Luiz',   tema:'INCC',            title:'INCC Indevido: Como Identificar Cobranças Abusivas no Contrato de Imóvel na Planta'},
+  {date:'17/11/2025',author:'Luiz',   tema:'Baixa de Hipoteca',title:'Baixa de Hipoteca: o que a matéria da Exame explica e o que realmente acontece'},
+  {date:'17/11/2025',author:'Luiz',   tema:'INCC',            title:'INCC indevido: quando ocorre cobrança abusiva e quais são os direitos do comprador'},
+  {date:'17/11/2025',author:'Julia',  tema:'Outros',          title:'Contrato de imóvel com prazo < 36 meses: correção anual'},
+  {date:'07/11/2025',author:'Julia',  tema:'Outros',          title:'Busta & Amaral Advogados participa do Congresso de Direito Imobiliário da OAB-SP'},
+  {date:'07/11/2025',author:'Julia',  tema:'INCC',            title:'INCC em contratos de imóveis na planta: quando a correção se torna indevida/abusiva'},
+];
+
+const BLOG_MONTHS = ['2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
+const BLOG_MO_LABELS = ['Nov/25','Dez/25','Jan/26','Fev/26','Mar/26','Abr/26','Mai/26','Jun/26'];
+const BLOG_TEMAS = ['INCC','Baixa de Hipoteca','Distrato','Atraso na Obra','Outros'];
+const TEMA_COLORS = {'INCC':'#2451a8','Baixa de Hipoteca':'#34a853','Distrato':'#f4a400','Atraso na Obra':'#c85a20','Outros':'#888'};
+const AUTHOR_COLORS = {'Luiz':'#2451a8','Gabriel':'#34a853','Julia':'#f4a400'};
+
+let blogInited = false;
+function renderBlog() {
+  // Monthly counts
+  const moCount = {};
+  BLOG_MONTHS.forEach(m=>moCount[m]={total:0,Luiz:0,Gabriel:0,Julia:0,INCC:0,'Baixa de Hipoteca':0,Distrato:0,'Atraso na Obra':0,Outros:0});
+  BLOG_POSTS.forEach(p=>{
+    const parts = p.date.split('/');
+    const key = parts[2]+'-'+parts[1];
+    if(!moCount[key]) return;
+    moCount[key].total++;
+    moCount[key][p.author]=(moCount[key][p.author]||0)+1;
+    moCount[key][p.tema]=(moCount[key][p.tema]||0)+1;
+  });
+
+  // Chart 1 — posts per month with totalizador
+  const blogMonthlyPlugin = {
+    id:'blogMonthly',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      const meta = chart.getDatasetMeta(0);
+      meta.data.forEach((bar,i)=>{
+        const val = BLOG_MONTHS.map(m=>moCount[m].total)[i];
+        if(!val) return;
+        ctx.save();
+        ctx.fillStyle='#555';
+        ctx.font='bold 11px Inter,-apple-system,sans-serif';
+        ctx.textAlign='center';
+        ctx.fillText(val, bar.x, bar.y-6);
+        ctx.restore();
+      });
+    }
+  };
+
+  if(charts.blogMonthly) charts.blogMonthly.destroy();
+  charts.blogMonthly = new Chart(document.getElementById('blog-monthly').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:BLOG_MO_LABELS,
+      datasets:[{
+        label:'Posts',
+        data:BLOG_MONTHS.map(m=>moCount[m].total),
+        backgroundColor:'#21759bcc',
+        borderColor:'#21759b',
+        borderWidth:1,
+        borderRadius:4,
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:24}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.parsed.y} posts`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{beginAtZero:true,ticks:{stepSize:2,font:{size:10}},grid:{color:'#f0ede8'}}}},
+    plugins:[blogMonthlyPlugin]
+  });
+
+  // Chart 2 — doughnut by tema
+  const temaCounts = {};
+  BLOG_TEMAS.forEach(t=>temaCounts[t]=0);
+  BLOG_POSTS.forEach(p=>temaCounts[p.tema]=(temaCounts[p.tema]||0)+1);
+
+  if(charts.blogTemas) charts.blogTemas.destroy();
+  charts.blogTemas = new Chart(document.getElementById('blog-temas').getContext('2d'),{
+    type:'doughnut',
+    data:{
+      labels:BLOG_TEMAS,
+      datasets:[{data:BLOG_TEMAS.map(t=>temaCounts[t]),backgroundColor:BLOG_TEMAS.map(t=>TEMA_COLORS[t]),borderWidth:2,borderColor:'#fff'}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed} posts (${Math.round(c.parsed/56*100)}%)`}}}}
+  });
+
+  // Chart 3 — bar by author
+  const authorCounts = {Luiz:0,Gabriel:0,Julia:0};
+  BLOG_POSTS.forEach(p=>authorCounts[p.author]=(authorCounts[p.author]||0)+1);
+  const authorBgPlugin = {
+    id:'authorBg',
+    afterDatasetsDraw(chart){
+      const {ctx} = chart;
+      chart.getDatasetMeta(0).data.forEach((bar,i)=>{
+        const val = Object.values(authorCounts)[i];
+        ctx.save();
+        ctx.fillStyle='#555';
+        ctx.font='bold 11px Inter,-apple-system,sans-serif';
+        ctx.textAlign='center';
+        ctx.fillText(val, bar.x, bar.y-6);
+        ctx.restore();
+      });
+    }
+  };
+  if(charts.blogAutores) charts.blogAutores.destroy();
+  charts.blogAutores = new Chart(document.getElementById('blog-autores').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:Object.keys(authorCounts),
+      datasets:[{data:Object.values(authorCounts),backgroundColor:Object.keys(authorCounts).map(a=>AUTHOR_COLORS[a]+'cc'),borderColor:Object.keys(authorCounts).map(a=>AUTHOR_COLORS[a]),borderWidth:1,borderRadius:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      layout:{padding:{top:24}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.parsed.y} posts`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:12}}},y:{beginAtZero:true,ticks:{stepSize:5,font:{size:10}},grid:{color:'#f0ede8'}}}},
+    plugins:[authorBgPlugin]
+  });
+
+  // Chart 4 — stacked bar by tema per month
+  if(charts.blogTemasMo) charts.blogTemasMo.destroy();
+  charts.blogTemasMo = new Chart(document.getElementById('blog-temas-mo').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:BLOG_MO_LABELS,
+      datasets:BLOG_TEMAS.map(t=>({
+        label:t,
+        data:BLOG_MONTHS.map(m=>moCount[m][t]||0),
+        backgroundColor:TEMA_COLORS[t]+'cc',
+        borderColor:TEMA_COLORS[t],
+        borderWidth:1,
+        borderRadius:2,
+      }))
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y}`}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,beginAtZero:true,ticks:{stepSize:2,font:{size:10}},grid:{color:'#f0ede8'}}}}
+  });
+
+  // Table
+  const tbody = document.getElementById('blog-tbody');
+  tbody.innerHTML='';
+  [...BLOG_POSTS].forEach(p=>{
+    const color = TEMA_COLORS[p.tema]||'#888';
+    tbody.innerHTML+=`<tr>
+      <td style="white-space:nowrap;color:#999;font-size:0.75rem">${p.date}</td>
+      <td style="font-size:0.78rem;max-width:400px">${p.title}</td>
+      <td><span style="font-size:0.75rem;font-weight:600;color:#555">${p.author}</span></td>
+      <td><span style="background:${color}18;color:${color};font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap">${p.tema}</span></td>
+    </tr>`;
+  });
+}
+
+// ══ CONTROLS ══════════════════════════════════════════════════════════════
+function setPeriod(p, btn) {
+  period = p;
+  document.querySelectorAll('#pane-campanhas .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('period-label').textContent = p==='all'?'Jan–Mai/2026':PERIODS[p];
+  renderGoogle();
+  renderMeta();
+  renderAnalysis();
+}
+
+function setSCPeriod(p, btn) {
+  scPeriod = p;
+  document.querySelectorAll('#pane-organico .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const labels = {all:'Nov/2025 – Mai/2026','11':'Novembro/2025','12':'Dezembro/2025','01':'Janeiro/2026','02':'Fevereiro/2026','03':'Março/2026','04':'Abril/2026','05':'Maio/2026'};
+  document.getElementById('sc-period-label').textContent = labels[p]||p;
+  renderSC();
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='organico' && !scInited) {
+    scInited = true;
+    setTimeout(renderSC, 50);
+  }
+  if(id==='blog' && !blogInited) {
+    blogInited = true;
+    setTimeout(renderBlog, 50);
+  }
+}
+
+// ══ INIT ══════════════════════════════════════════════════════════════════
+document.getElementById('gen-date').textContent = new Date().toLocaleDateString('pt-BR');
+renderGoogle();
+renderMeta();
+renderAnalysis();
+</script>
+</body>
+</html>
