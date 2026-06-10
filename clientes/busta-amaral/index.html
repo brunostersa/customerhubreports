@@ -250,6 +250,15 @@
     </table>
   </div>
 
+  <!-- SC Pages Table -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title"><span class="badge badge-sc">Search Console</span> Páginas mais acessadas</div>
+    <table>
+      <thead><tr><th>#</th><th>Página</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th>Posição</th></tr></thead>
+      <tbody id="sc-pages-tbody"></tbody>
+    </table>
+  </div>
+
   <!-- SC Analysis -->
   <div class="card" style="margin-top:20px">
     <div class="card-title"><span class="badge badge-sc">Análise</span> Tráfego Orgânico</div>
@@ -399,6 +408,30 @@ const SC_QUERIES = [
   { q:'como saber se a oab é verdadeira',       clicks:1,   impr:61,    ctr:1.64,  pos:7.85  },
   { q:'incc de março 2026',                     clicks:1,   impr:20,    ctr:5.00,  pos:1.32  },
   { q:'incc tabela',                            clicks:1,   impr:3,     ctr:33.33, pos:5.33  },
+];
+const SC_PAGES = [
+  { label:'Página inicial',                                                  url:'bustaeamaraladvogados.com.br/',                                                          clicks:203, impr:1890, ctr:10.74, pos:5.25 },
+  { label:'Página inicial (www)',                                            url:'www.bustaeamaraladvogados.com.br/',                                                      clicks:156, impr:1291, ctr:12.08, pos:7.88 },
+  { label:'Baixa de Hipoteca: regularizar imóvel quitado e retirar gravame', url:'baixa-de-hipoteca-como-regularizar-imovel-quitado-e-retirar-o-gravame-da-matricula/',    clicks:109, impr:9372, ctr:1.16,  pos:5.53 },
+  { label:'Área de atuação: Cobrança indevida de INCC',                      url:'areas-de-atuacao/cobranca-indevida-de-incc/',                                            clicks:102, impr:3555, ctr:2.87,  pos:6.38 },
+  { label:'INCC indevido: cobrança abusiva e direitos do comprador',         url:'incc-indevido-cobranca-abusiva-direitos-comprador/',                                     clicks:93,  impr:3992, ctr:2.33,  pos:3.89 },
+  { label:'Segurança Digital: Verificar OAB',                                url:'segurancadigital.bustaeamaraladvogados.com.br/verificar-oab',                           clicks:39,  impr:5956, ctr:0.65,  pos:7.83 },
+  { label:'INCC indevido: como identificar cobranças abusivas',             url:'incc-indevido-como-identificar-cobrancas-abusivas-no-contrato-de-imovel-na-planta/',    clicks:35,  impr:3773, ctr:0.93,  pos:3.56 },
+  { label:'INCC após o habite-se: cobrança abusiva',                         url:'incc-apos-o-habite-se-quando-a-cobranca-e-abusiva-e-pode-gerar-devolucao-de-valores/',  clicks:22,  impr:1140, ctr:1.93,  pos:5.71 },
+  { label:'INCC indevido em imóveis na planta',                              url:'incc-indevido-imoveis-na-planta-cobranca-abusiva/',                                      clicks:21,  impr:1749, ctr:1.2,   pos:6.39 },
+  { label:'Rescisão de contrato com alienação fiduciária',                   url:'rescisao-contrato-alienacao-fiduciaria/',                                                clicks:21,  impr:946,  ctr:2.22,  pos:6.56 },
+  { label:'Sobre',                                                           url:'sobre/',                                                                                  clicks:18,  impr:791,  ctr:2.28,  pos:4.53 },
+  { label:'Atraso na obra: indenização',                                     url:'atraso-na-obra-indenizacao/',                                                            clicks:13,  impr:408,  ctr:3.19,  pos:5.9  },
+  { label:'Blog (página principal)',                                         url:'blog/',                                                                                  clicks:12,  impr:649,  ctr:1.85,  pos:3.56 },
+  { label:'Distrato de apartamento HIS/HMP por falta de informação',         url:'distrato-de-apartamento-his-ou-hmp-por-falta-de-informacao-o-comprador-pode-pedir-a-rescisao-do-contrato/', clicks:12, impr:193, ctr:6.22, pos:4.4 },
+  { label:'Revisão de INCC: cobrança indevida',                              url:'revisao-de-incc-quando-a-cobranca-e-indevida-e-como-recuperar-valores-pagos-a-mais/',    clicks:7,   impr:328,  ctr:2.13,  pos:6.93 },
+  { label:'Contato',                                                         url:'contato/',                                                                                clicks:6,   impr:683,  ctr:0.88,  pos:3.58 },
+  { label:'Segurança Digital: Tipos de situação',                            url:'segurancadigital.bustaeamaraladvogados.com.br/tipos-situacao',                          clicks:6,   impr:565,  ctr:1.06,  pos:5.81 },
+  { label:'Imóvel quitado com hipoteca: como baixar e regularizar',          url:'imovel-quitado-com-hipoteca-na-matricula-como-baixar-a-hipoteca-e-regularizar-a-escritura/', clicks:6, impr:286, ctr:2.1, pos:5.99 },
+  { label:'Distrato e INCC',                                                 url:'distrato-e-incc/',                                                                       clicks:6,   impr:157,  ctr:3.82,  pos:5.8  },
+  { label:'Parcela simbólica no INCC',                                       url:'parcela-simbolica-no-incc-quando-a-cobranca-e-abusiva-e-pode-ser-anulada/',              clicks:5,   impr:438,  ctr:1.14,  pos:6.91 },
+  { label:'Baixa de Hipoteca: remover gravames da matrícula',                url:'baixa-de-hipoteca-como-regularizar-o-imovel-quitado-e-remover-gravames-da-matricula/',  clicks:5,   impr:217,  ctr:2.3,   pos:4.62 },
+  { label:'INCC x IPCA',                                                     url:'incc-x-ipca/',                                                                            clicks:5,   impr:161,  ctr:3.11,  pos:6.11 },
 ];
 
 // Analysis by period
@@ -844,6 +877,24 @@ function renderSC() {
       <td>${fN(q.impr)}</td>
       <td>${q.ctr>0?q.ctr.toFixed(2)+'%':'<span class="td-muted">0%</span>'}</td>
       <td style="font-weight:600;color:${posColor}">${q.pos.toFixed(1)}°</td>
+    </tr>`;
+  });
+
+  // SC Pages Table
+  const pagesTbody = document.getElementById('sc-pages-tbody');
+  pagesTbody.innerHTML = '';
+  SC_PAGES.forEach((p,i)=>{
+    const posColor = p.pos<=3?'#2a7a4a':p.pos<=10?'#7a6010':'#c85a20';
+    pagesTbody.innerHTML += `<tr>
+      <td class="td-muted">${i+1}</td>
+      <td>
+        <div style="font-weight:600">${p.label}</div>
+        <div style="font-size:0.68rem;color:#bbb;margin-top:2px">${p.url}</div>
+      </td>
+      <td class="${p.clicks>0?'td-strong':'td-muted'}">${p.clicks>0?p.clicks:'—'}</td>
+      <td>${fN(p.impr)}</td>
+      <td>${p.ctr>0?p.ctr.toFixed(2)+'%':'<span class="td-muted">0%</span>'}</td>
+      <td style="font-weight:600;color:${posColor}">${p.pos.toFixed(1)}°</td>
     </tr>`;
   });
 }
