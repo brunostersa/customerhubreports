@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Brasilia NeuroClínica — Set/25–Mai/26</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #f7f6f3; color: #1a1a18; padding: 32px 40px; max-width: 1040px; margin: 0 auto; }
+
+  .report-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .report-header h1 { font-size: 1.35rem; font-weight: 600; }
+  .report-header .subtitle { font-size: 0.8rem; color: #888; margin-top: 3px; }
+
+  .global-filter { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #e8e4de; border-radius: 12px; padding: 12px 20px; margin-bottom: 28px; flex-wrap: wrap; }
+  .gf-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #888; white-space: nowrap; }
+  .gf-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .gf-tab { padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 500; cursor: pointer; border: 1px solid #e8e4de; background: #fff; color: #888; font-family: 'Inter', sans-serif; transition: all .15s; }
+  .gf-tab:hover { border-color: #1a1a18; color: #1a1a18; }
+  .gf-tab.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .gf-period { font-size: 0.72rem; color: #aaa; margin-left: auto; font-style: italic; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: #fff; border: 1px solid #e8e4de; border-radius: 12px; padding: 18px 20px; }
+  .kpi-card .label { font-size: 0.75rem; color: #888; margin-bottom: 5px; }
+  .kpi-card .value { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+  .kpi-card .sub { font-size: 0.72rem; color: #aaa; margin-top: 4px; }
+
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+  .chart-card { background: #fff; border: 1px solid #e8e4de; border-radius: 12px; padding: 20px; }
+  .chart-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 12px; }
+  .legend { display: flex; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: #555; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .chart-wrap { position: relative; height: 240px; }
+  .chart-wrap-sm { position: relative; height: 200px; }
+
+  .section-header { display: flex; align-items: center; gap: 12px; margin: 32px 0 14px; }
+  .section-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #fff; padding: 4px 10px; border-radius: 4px; }
+  .label-google { background: #2451a8; }
+  .label-sc { background: #34a853; }
+  .section-title { font-size: 0.95rem; font-weight: 600; }
+  .section-sub { font-size: 0.75rem; color: #888; margin-top: 1px; }
+
+  .table-card { background: #fff; border: 1px solid #e8e4de; border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  thead tr { border-bottom: 1px solid #e8e4de; }
+  th { text-align: left; padding: 11px 14px; font-size: 0.7rem; font-weight: 600; color: #888; background: #fafaf8; white-space: nowrap; }
+  td { padding: 10px 14px; border-bottom: 1px solid #f0ede8; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafaf8; }
+  .td-strong { font-weight: 600; }
+  .td-muted { color: #aaa; }
+  .td-warn { color: #c85a20; font-weight: 600; }
+  .td-ok { color: #2a7a4a; font-weight: 600; }
+  tr.totals-row td { background: #fafaf8; font-weight: 600; border-top: 2px solid #e8e4de; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.67rem; font-weight: 500; }
+  .pill-ok { background: #e6f5ed; color: #1a5c36; }
+  .pill-warn { background: #fdf0e0; color: #7a4a10; }
+  .pill-bad { background: #fde8e8; color: #8c1a1a; }
+  .mini-bar-cell { display: flex; align-items: center; gap: 7px; }
+  .mini-bar { height: 5px; border-radius: 3px; min-width: 2px; }
+
+  .footer-note { font-size: 0.7rem; color: #aaa; margin-top: 14px; text-align: center; line-height: 1.6; }
+  .no-print { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; }
+  .btn { padding: 8px 18px; border-radius: 8px; font-size: 0.82rem; font-family: 'Inter', sans-serif; cursor: pointer; font-weight: 500; border: 1px solid #e8e4de; background: #fff; color: #1a1a18; transition: all .15s; }
+  .btn:hover { background: #f0ede8; }
+  .btn-primary { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .btn-primary:hover { background: #333; }
+  @media print { .no-print { display: none; } .global-filter { display: none; } body { background: #fff; padding: 20px; } }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <button class="btn" onclick="exportCSV()">⬇ Exportar CSV</button>
+  <button class="btn btn-primary" onclick="window.print()">🖨 Imprimir / PDF</button>
+</div>
+
+<div class="report-header">
+  <div>
+    <h1>Brasilia NeuroClínica</h1>
+    <div class="subtitle">Relatório de Performance — Google Ads + Search Console</div>
+  </div>
+</div>
+
+<!-- Filtro global -->
+<div class="global-filter">
+  <span class="gf-label">Período</span>
+  <div class="gf-tabs">
+    <button class="gf-tab active" onclick="setPeriod('all',this)">Set/25–Mai/26 (tudo)</button>
+    <button class="gf-tab" onclick="setPeriod('2025',this)">2025</button>
+    <button class="gf-tab" onclick="setPeriod('2026',this)">2026</button>
+    <button class="gf-tab" onclick="setPeriod('09',this)">Set/25</button>
+    <button class="gf-tab" onclick="setPeriod('10',this)">Out/25</button>
+    <button class="gf-tab" onclick="setPeriod('11',this)">Nov/25</button>
+    <button class="gf-tab" onclick="setPeriod('12',this)">Dez/25</button>
+    <button class="gf-tab" onclick="setPeriod('01',this)">Jan/26</button>
+    <button class="gf-tab" onclick="setPeriod('02',this)">Fev/26</button>
+    <button class="gf-tab" onclick="setPeriod('03',this)">Mar/26</button>
+    <button class="gf-tab" onclick="setPeriod('04',this)">Abr/26</button>
+    <button class="gf-tab" onclick="setPeriod('05',this)">Mai/26</button>
+  </div>
+  <span class="gf-period" id="gf-label">Set/2025 – Mai/2026</span>
+</div>
+
+<!-- Google Ads -->
+<div class="section-header">
+  <span class="section-label label-google">Google Ads</span>
+  <div>
+    <div class="section-title">Search &amp; Performance Max</div>
+    <div class="section-sub" id="g-sub">set/2025 – 29 abr/2026</div>
+  </div>
+</div>
+
+<div class="kpi-grid" id="g-kpis"></div>
+
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">Investimento mensal (R$)</div>
+    <div class="legend" id="bar-legend"></div>
+    <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Custo por conversão por mês (R$)</div>
+    <div class="chart-wrap"><canvas id="cpl-chart"></canvas></div>
+  </div>
+</div>
+
+<div class="table-card">
+  <table>
+    <thead><tr><th>Mês</th><th>Investimento</th><th>Cliques</th><th>Impressões</th><th>Conversões</th><th>CPL</th><th>CTR</th><th>CPC</th></tr></thead>
+    <tbody id="g-monthly"></tbody>
+  </table>
+</div>
+
+<div class="table-card">
+  <table>
+    <thead><tr><th>Campanha</th><th>Investimento</th><th>Cliques</th><th>Conversões</th><th>CPL</th><th>CTR</th><th>Status</th></tr></thead>
+    <tbody id="g-camps"></tbody>
+  </table>
+</div>
+
+<!-- Search Console -->
+<div class="section-header">
+  <span class="section-label label-sc">Search Console</span>
+  <div>
+    <div class="section-title">Tráfego Orgânico — Google Search</div>
+    <div class="section-sub" id="sc-sub">brasilianeuroclinica.com.br · jan/mai 2026</div>
+  </div>
+</div>
+
+<div class="kpi-grid" id="sc-kpis"></div>
+
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">Cliques e impressões orgânicas — evolução mensal</div>
+    <div class="chart-wrap"><canvas id="sc-trend"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Posição média e CTR orgânico — evolução mensal</div>
+    <div class="chart-wrap"><canvas id="sc-pos"></canvas></div>
+  </div>
+</div>
+
+<!-- Análise -->
+<div class="section-header">
+  <span class="section-label" style="background:#1a1a18">Análise</span>
+  <div>
+    <div class="section-title">Análise Consolidada</div>
+    <div class="section-sub" id="a-sub">Set/25–Abr/26 · Google Ads + Search Console</div>
+  </div>
+</div>
+
+<div style="background:#1a1a18;border-radius:12px;padding:28px;margin-bottom:24px" id="analysis-card"></div>
+
+<div class="footer-note">
+  Search Console disponível a partir de Jan/2026<br>
+  Fonte: Windsor.ai + Google Search Console · Gerado em <span id="gen-date"></span>
+</div>
+
+<script>
+// ══ DATA ══════════════════════════════════════════════════════════════════
+const G_MONTHLY = [
+  { mo:'09', year:'2025', spend:9.999,    conv:3,      clicks:35,   impr:152    },
+  { mo:'10', year:'2025', spend:151.164,  conv:78,     clicks:1173, impr:3897   },
+  { mo:'11', year:'2025', spend:385.719,  conv:88,     clicks:1383, impr:6470   },
+  { mo:'12', year:'2025', spend:491.894,  conv:44,     clicks:888,  impr:5506   },
+  { mo:'01', year:'2026', spend:1020.954, conv:128,    clicks:1769, impr:127226 },
+  { mo:'02', year:'2026', spend:912.984,  conv:247,    clicks:1933, impr:39178  },
+  { mo:'03', year:'2026', spend:1040.920, conv:314,    clicks:1460, impr:9960   },
+  { mo:'04', year:'2026', spend:1342.708, conv:309,    clicks:1285, impr:9295   },
+  { mo:'05', year:'2026', spend:2418.588, conv:495,    clicks:1878, impr:15452  },
+];
+
+const G_CAMPS_RAW = [
+  { name:'Buscas - Institucional / Reconhecimento Branding', m:{
+    '09':{s:9.999,c:3,k:35,i:152}, '10':{s:151.164,c:78,k:1173,i:3897},
+    '11':{s:385.719,c:88,k:1383,i:6470}, '12':{s:491.894,c:44,k:888,i:5506},
+    '01':{s:352.577,c:91,k:606,i:3167}, '02':{s:296.145,c:165,k:668,i:2869},
+    '03':{s:520.304,c:214,k:1029,i:4945}, '04':{s:595.281,c:148,k:786,i:4378},
+    '05':{s:904.051,c:198,k:927,i:5685},
+  }},
+  { name:'Buscas - EEG', m:{
+    '01':{s:497.991,c:37,k:355,i:3548}, '02':{s:483.415,c:82,k:400,i:3518},
+    '03':{s:520.616,c:100,k:431,i:5015}, '04':{s:747.427,c:161,k:499,i:4917},
+    '05':{s:1514.538,c:297,k:951,i:9767},
+  }},
+  { name:'Performance Max - Geral', m:{
+    '01':{s:170.386,c:0,k:808,i:120511}, '02':{s:133.425,c:0,k:865,i:32791},
+  }},
+];
+
+const SC_MONTHLY = [
+  { mo:'01', year:'2026', clicks:494,  impr:19447,  ctr:2.54, pos:6.83 },
+  { mo:'02', year:'2026', clicks:2123, impr:92348,  ctr:2.30, pos:6.66 },
+  { mo:'03', year:'2026', clicks:2482, impr:113806, ctr:2.18, pos:6.46 },
+  { mo:'04', year:'2026', clicks:1752, impr:45220,  ctr:3.87, pos:6.46 },
+  { mo:'05', year:'2026', clicks:1957, impr:50925,  ctr:3.84, pos:7.27 },
+];
+
+const MONTH_NAMES = {
+  '09':'Set/25','10':'Out/25','11':'Nov/25','12':'Dez/25',
+  '01':'Jan/26','02':'Fev/26','03':'Mar/26','04':'Abr/26','05':'Mai/26'
+};
+const PERIOD_LABELS = {
+  'all':'Set/2025 – Mai/2026','2025':'Set–Dez/2025','2026':'Jan–Mai/2026',
+  '09':'Setembro/2025','10':'Outubro/2025','11':'Novembro/2025','12':'Dezembro/2025',
+  '01':'Janeiro/2026','02':'Fevereiro/2026','03':'Março/2026','04':'Abril/2026','05':'Maio/2026'
+};
+const COLORS = ['#2451a8','#c85a20','#8a4a9a'];
+
+let currentPeriod = 'all';
+let charts = {};
+
+// ══ FORMAT ════════════════════════════════════════════════════════════════
+function fBRL(n){ if(n==null||isNaN(n))return'—'; return'R$ '+Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fN(n)  { if(n==null)return'—'; return Number(n).toLocaleString('pt-BR'); }
+function fPct(n){ return Number(n).toFixed(2)+'%'; }
+
+function gFilter(){
+  if(currentPeriod==='all') return G_MONTHLY;
+  if(currentPeriod==='2025') return G_MONTHLY.filter(d=>d.year==='2025');
+  if(currentPeriod==='2026') return G_MONTHLY.filter(d=>d.year==='2026');
+  return G_MONTHLY.filter(d=>d.mo===currentPeriod);
+}
+function scFilter(){
+  if(currentPeriod==='all'||currentPeriod==='2026') return SC_MONTHLY;
+  if(currentPeriod==='2025') return [];
+  return SC_MONTHLY.filter(d=>d.mo===currentPeriod);
+}
+
+function setPeriod(p,btn){
+  currentPeriod=p;
+  document.querySelectorAll('.gf-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('gf-label').textContent=PERIOD_LABELS[p];
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});
+  charts={};
+  renderAll();
+}
+
+function renderAll(){ renderGoogle(); renderSC(); renderAnalysis(); }
+
+// ══ GOOGLE ADS ════════════════════════════════════════════════════════════
+function renderGoogle(){
+  const data = gFilter();
+  const months = data.map(d=>MONTH_NAMES[d.mo]);
+  document.getElementById('g-sub').textContent = PERIOD_LABELS[currentPeriod];
+
+  const tot = data.reduce((a,d)=>({spend:a.spend+d.spend,conv:a.conv+d.conv,clicks:a.clicks+d.clicks,impr:a.impr+d.impr}),{spend:0,conv:0,clicks:0,impr:0});
+  const avgCPL = tot.conv>0?tot.spend/tot.conv:null;
+  const avgCTR = tot.impr>0?(tot.clicks/tot.impr)*100:0;
+  const avgCPC = tot.clicks>0?tot.spend/tot.clicks:0;
+
+  const last3 = G_MONTHLY.slice(-3);
+  const avg3Spend = last3.reduce((s,d)=>s+d.spend,0) / last3.length;
+
+  document.getElementById('g-kpis').innerHTML=`
+    <div class="kpi-card"><div class="label">Invest. médio (últ. 3 meses)</div><div class="value">${fBRL(avg3Spend)}</div><div class="sub">Mar · Abr · Mai/26</div></div>
+    <div class="kpi-card"><div class="label">Total de cliques</div><div class="value">${fN(tot.clicks)}</div><div class="sub">${PERIOD_LABELS[currentPeriod]}</div></div>
+    <div class="kpi-card"><div class="label">Total de conversões</div><div class="value">${fN(tot.conv)}</div><div class="sub">${PERIOD_LABELS[currentPeriod]}</div></div>
+    <div class="kpi-card"><div class="label">CTR médio</div><div class="value">${fPct(avgCTR)}</div><div class="sub">CPC ${fBRL(avgCPC)}</div></div>
+    <div class="kpi-card"><div class="label">CPL médio</div><div class="value">${avgCPL?fBRL(avgCPL):'—'}</div><div class="sub">custo por conversão</div></div>
+  `;
+
+  // Monthly table
+  const mb = document.getElementById('g-monthly'); mb.innerHTML='';
+  data.forEach(d=>{
+    const cpl=d.conv>0?d.spend/d.conv:null;
+    const ctr=d.impr>0?(d.clicks/d.impr)*100:0;
+    const cpc=d.clicks>0?d.spend/d.clicks:0;
+    const cc=!cpl?'':cpl<5?'td-ok':cpl>15?'td-warn':'';
+    mb.innerHTML+=`<tr>
+      <td>${MONTH_NAMES[d.mo]}</td><td class="td-strong">${fBRL(d.spend)}</td>
+      <td>${fN(d.clicks)}</td><td>${fN(d.impr)}</td>
+      <td>${fN(d.conv)}</td>
+      <td class="${cc}">${cpl?fBRL(cpl):'—'}</td>
+      <td>${fPct(ctr)}</td><td>${fBRL(cpc)}</td></tr>`;
+  });
+  if(data.length>1){
+    mb.innerHTML+=`<tr class="totals-row"><td>Total</td><td>${fBRL(tot.spend)}</td><td>${fN(tot.clicks)}</td><td>${fN(tot.impr)}</td><td>${fN(tot.conv)}</td><td>${avgCPL?fBRL(avgCPL):'—'}</td><td>${fPct(avgCTR)}</td><td>${fBRL(avgCPC)}</td></tr>`;
+  }
+
+  // Campaign table
+  const keys = data.map(d=>d.mo);
+  const campData = G_CAMPS_RAW.map(c=>{
+    const spend=keys.reduce((s,k)=>s+(c.m[k]?c.m[k].s:0),0);
+    const conv= keys.reduce((s,k)=>s+(c.m[k]?c.m[k].c:0),0);
+    const clicks=keys.reduce((s,k)=>s+(c.m[k]?c.m[k].k:0),0);
+    const impr= keys.reduce((s,k)=>s+(c.m[k]?c.m[k].i:0),0);
+    return {name:c.name,spend,conv,clicks,impr};
+  }).filter(c=>c.spend>0).sort((a,b)=>b.spend-a.spend);
+  const maxS=Math.max(...campData.map(c=>c.spend));
+  const cb=document.getElementById('g-camps'); cb.innerHTML='';
+  campData.forEach(c=>{
+    const cpl=c.conv>0?c.spend/c.conv:null;
+    const ctr=c.impr>0?(c.clicks/c.impr)*100:0;
+    const pct=Math.round((c.spend/maxS)*80);
+    const st=c.conv===0?['pill-bad','sem conv.']:cpl&&cpl<5?['pill-ok','ótimo']:cpl&&cpl>15?['pill-warn','atenção']:['pill-ok','ativo'];
+    cb.innerHTML+=`<tr>
+      <td style="font-size:0.8rem">${c.name}</td>
+      <td><div class="mini-bar-cell"><div class="mini-bar" style="width:${pct}px;background:#2451a820"></div>${fBRL(c.spend)}</div></td>
+      <td>${fN(c.clicks)}</td><td>${fN(c.conv)}</td>
+      <td class="${!cpl?'td-muted':cpl<5?'td-ok':cpl>15?'td-warn':''}">${cpl?fBRL(cpl):'—'}</td>
+      <td>${fPct(ctr)}</td>
+      <td><span class="pill ${st[0]}">${st[1]}</span></td></tr>`;
+  });
+
+  // Bar chart — stacked by campaign
+  const campDatasets = G_CAMPS_RAW.map((c,i)=>({
+    label:c.name.replace('Buscas - ','').replace(' Geral',''),
+    data:data.map(d=>c.m[d.mo]?c.m[d.mo].s:0),
+    backgroundColor:COLORS[i],borderSkipped:false,borderRadius:3
+  })).filter(d=>d.data.some(v=>v>0));
+  const leg=document.getElementById('bar-legend'); leg.innerHTML='';
+  campDatasets.forEach((d,i)=>{ leg.innerHTML+=`<span class="legend-item"><span class="legend-dot" style="background:${COLORS[i]}"></span>${d.label}</span>`; });
+
+  const stackTotals={id:'st',afterDatasetsDraw(chart){
+    const{ctx,data:cd}=chart;
+    const nl=cd.labels.length, nd=cd.datasets.length;
+    for(let i=0;i<nl;i++){
+      const total=cd.datasets.reduce((s,ds)=>s+(ds.data[i]||0),0); if(!total)continue;
+      let topY=Infinity;
+      for(let d=0;d<nd;d++){const meta=chart.getDatasetMeta(d);if(!meta.hidden){const b=meta.data[i];if(b&&b.y<topY)topY=b.y;}}
+      ctx.save();ctx.fillStyle='#1a1a18';ctx.font='600 10px Inter';ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.fillText('R$'+Math.round(total).toLocaleString('pt-BR'),chart.getDatasetMeta(0).data[i].x,topY-4);
+      ctx.restore();
+    }
+  }};
+
+  charts.bar=new Chart(document.getElementById('bar-chart').getContext('2d'),{
+    type:'bar',
+    data:{labels:months,datasets:campDatasets},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:24}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${fBRL(ctx.parsed.y)}`}}},
+      scales:{x:{stacked:true,ticks:{color:'#888',font:{family:'Inter',size:11}},grid:{display:false}},
+              y:{stacked:true,suggestedMax:2800,ticks:{color:'#888',font:{family:'Inter',size:10},callback:v=>'R$'+v.toLocaleString('pt-BR')},grid:{color:'#f0ede8'}}}},
+    plugins:[stackTotals]
+  });
+
+  // CPL line
+  const cplVals=data.map(d=>d.conv>0?parseFloat((d.spend/d.conv).toFixed(2)):null);
+  charts.cpl=new Chart(document.getElementById('cpl-chart').getContext('2d'),{
+    type:'line',
+    data:{labels:months,datasets:[{label:'CPL',data:cplVals,borderColor:'#c85a20',backgroundColor:'rgba(200,90,32,0.08)',pointBackgroundColor:'#c85a20',pointRadius:6,tension:0.3,fill:true,borderWidth:2.5,spanGaps:true}]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:28}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` CPL: ${fBRL(ctx.parsed.y)}`}}},
+      scales:{x:{ticks:{color:'#888',font:{family:'Inter',size:11}},grid:{display:false}},
+              y:{min:0,ticks:{color:'#888',font:{family:'Inter',size:10},callback:v=>'R$'+v.toFixed(0)},grid:{color:'#f0ede8'}}}},
+    plugins:[{id:'cplL',afterDatasetsDraw(chart){
+      const{ctx}=chart;
+      chart.getDatasetMeta(0).data.forEach((pt,i)=>{
+        const v=cplVals[i];if(!v)return;
+        ctx.save();ctx.fillStyle='#c85a20';ctx.font='700 11px Inter';ctx.textAlign='center';
+        ctx.fillText(fBRL(v),pt.x,pt.y-14);ctx.restore();
+      });
+    }}]
+  });
+}
+
+// ══ SEARCH CONSOLE ════════════════════════════════════════════════════════
+function renderSC(){
+  const data=scFilter();
+  const label=currentPeriod==='2025'?'Sem dados (SC disponível a partir de Jan/2026)':PERIOD_LABELS[currentPeriod];
+  document.getElementById('sc-sub').textContent='brasilianeuroclinica.com.br · '+label;
+
+  if(!data.length){
+    document.getElementById('sc-kpis').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:20px;color:#aaa;background:#fff;border:1px solid #e8e4de;border-radius:12px;font-size:0.85rem">Search Console disponível apenas a partir de Janeiro/2026</div>`;
+    return;
+  }
+
+  const tot=data.reduce((a,d)=>({clicks:a.clicks+d.clicks,impr:a.impr+d.impr}),{clicks:0,impr:0});
+  const avgPos=data.reduce((s,d)=>s+d.pos,0)/data.length;
+  const avgCTR=tot.impr>0?(tot.clicks/tot.impr)*100:0;
+
+  document.getElementById('sc-kpis').innerHTML=`
+    <div class="kpi-card"><div class="label">Cliques orgânicos</div><div class="value">${fN(tot.clicks)}</div><div class="sub">${label}</div></div>
+    <div class="kpi-card"><div class="label">Impressões totais</div><div class="value">${fN(tot.impr)}</div><div class="sub">${label}</div></div>
+    <div class="kpi-card"><div class="label">CTR médio</div><div class="value">${fPct(avgCTR)}</div><div class="sub">orgânico</div></div>
+    <div class="kpi-card"><div class="label">Posição média</div><div class="value">${avgPos.toFixed(1)}º</div><div class="sub">Google Search</div></div>
+    <div class="kpi-card"><div class="label">Melhor mês</div><div class="value">${fN(Math.max(...data.map(d=>d.clicks)))}</div><div class="sub">cliques orgânicos</div></div>
+  `;
+
+  const months=data.map(d=>MONTH_NAMES[d.mo]);
+
+  charts.scTrend=new Chart(document.getElementById('sc-trend').getContext('2d'),{
+    type:'bar',
+    data:{labels:months,datasets:[
+      {label:'Impressões',data:data.map(d=>d.impr),backgroundColor:'#34a85325',borderColor:'#34a853',borderWidth:1.5,borderRadius:3,yAxisID:'y2'},
+      {label:'Cliques',data:data.map(d=>d.clicks),type:'line',borderColor:'#1a7a3a',backgroundColor:'transparent',pointBackgroundColor:'#1a7a3a',pointRadius:5,tension:0.3,borderWidth:2.5,yAxisID:'y'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:24}},
+      plugins:{legend:{labels:{color:'#555',font:{family:'Inter',size:11},boxWidth:12}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${fN(ctx.parsed.y)}`}}},
+      scales:{
+        x:{ticks:{color:'#888',font:{family:'Inter',size:11}},grid:{display:false}},
+        y:{position:'left',ticks:{color:'#1a7a3a',font:{family:'Inter',size:10}},grid:{color:'#f0ede8'}},
+        y2:{position:'right',ticks:{color:'#34a853',font:{family:'Inter',size:10}},grid:{display:false}}
+      }},
+    plugins:[{id:'scL',afterDatasetsDraw(chart){
+      const{ctx}=chart;
+      chart.getDatasetMeta(1).data.forEach((pt,i)=>{
+        ctx.save();ctx.fillStyle='#1a7a3a';ctx.font='600 10px Inter';ctx.textAlign='center';
+        ctx.fillText(fN(data[i].clicks),pt.x,pt.y-12);ctx.restore();
+      });
+    }}]
+  });
+
+  const posVals=data.map(d=>d.pos);
+  const ctrVals=data.map(d=>d.ctr);
+  charts.scPos=new Chart(document.getElementById('sc-pos').getContext('2d'),{
+    type:'line',
+    data:{labels:months,datasets:[
+      {label:'Posição média',data:posVals,borderColor:'#f4a400',backgroundColor:'rgba(244,164,0,0.07)',pointBackgroundColor:'#f4a400',pointRadius:5,tension:0.3,fill:true,borderWidth:2.5,yAxisID:'y'},
+      {label:'CTR (%)',data:ctrVals,borderColor:'#34a853',backgroundColor:'transparent',pointBackgroundColor:'#34a853',pointRadius:5,tension:0.3,borderWidth:2,borderDash:[5,3],yAxisID:'y2'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#555',font:{family:'Inter',size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.yAxisID==='y2'?` CTR: ${ctx.parsed.y.toFixed(2)}%`:` Posição: ${ctx.parsed.y.toFixed(2)}º`}}},
+      scales:{
+        x:{ticks:{color:'#888',font:{family:'Inter',size:11}},grid:{display:false}},
+        y:{position:'left',reverse:true,min:5,max:8,ticks:{color:'#f4a400',font:{family:'Inter',size:10},callback:v=>v+'º'},grid:{color:'#f0ede8'},title:{display:true,text:'↑ melhor',color:'#f4a400',font:{size:10}}},
+        y2:{position:'right',min:0,suggestedMax:5,ticks:{color:'#34a853',font:{family:'Inter',size:10},callback:v=>v+'%'},grid:{display:false}}
+      }},
+    plugins:[{id:'scPL',afterDatasetsDraw(chart){
+      const{ctx}=chart;
+      [[posVals,'#f4a400',v=>v.toFixed(2)+'º'],[ctrVals,'#34a853',v=>v.toFixed(2)+'%']].forEach(([vals,color,fmt],di)=>{
+        chart.getDatasetMeta(di).data.forEach((pt,i)=>{
+          ctx.save();ctx.fillStyle=color;ctx.font='600 10px Inter';ctx.textAlign='center';
+          ctx.fillText(fmt(vals[i]),pt.x,pt.y-12);ctx.restore();
+        });
+      });
+    }}]
+  });
+}
+
+// ══ ANALYSIS ══════════════════════════════════════════════════════════════
+const ANALYSIS = {
+  'all':{
+    google:{
+      pos:[
+        {t:'Maio foi o melhor mês da história',b:'495 contatos gerados com custo médio de R$ 4,88 por contato — o maior volume desde o início das campanhas, com eficiência acima da média do mercado de saúde.'},
+        {t:'Cada real investido gerou mais retorno',b:'em março, o custo por contato chegou a R$ 3,31 — o mais baixo do período. Mesmo em maio, com o dobro de investimento, o custo se manteve abaixo de R$ 5,00, mostrando que a escala está sendo feita de forma saudável.'},
+        {t:'Campanha de EEG se tornou o principal motor de crescimento',b:'lançada em janeiro, a campanha de EEG respondia por 37 conversões no primeiro mês e chegou a 297 em maio — um crescimento de +703% em 5 meses, com custo por contato de R$ 5,10.'},
+        {t:'Crescimento orgânico complementando o tráfego pago',b:'o site passou de 494 visitas orgânicas em janeiro para 1.957 em maio, sem nenhum custo adicional. Isso mostra que as campanhas pagas estão ajudando o Google a reconhecer a clínica como referência na área.'},
+      ],
+      warn:[
+        {t:'O aumento de investimento em maio precisa ser acompanhado',b:'o budget quase dobrou em relação a abril (de R$ 1.343 para R$ 2.419). Os resultados foram positivos, mas é importante confirmar nos próximos meses que o volume de agendamentos reais está acompanhando o volume de contatos.'},
+        {t:'Dezembro é o mês que precisa de atenção especial',b:'no final de 2025, o custo por contato chegou a R$ 11 — o triplo da média. Isso é esperado em dez/jan no setor de saúde, mas vale planejar uma estratégia específica com antecedência.'},
+      ],
+      recs:[
+        {t:'Manter as duas campanhas de busca ativas',b:'Institucional e EEG estão funcionando bem juntas — uma captura quem busca a clínica pelo nome, a outra captura quem busca pelo exame. Esse complemento é estratégico.'},
+        {t:'Transformar o tráfego orgânico em vantagem competitiva',b:'com quase 2.000 visitas orgânicas por mês, vale criar páginas específicas para EEG e neurologia no site — isso pode gerar contatos gratuitos nos próximos meses e reduzir a dependência do budget pago.'},
+        {t:'Acompanhar a qualidade dos contatos de junho',b:'com o crescimento de escala, o indicador mais importante agora é: quantos dos contatos gerados estão virando agendamentos? Isso vai guiar o ajuste fino do investimento.'},
+      ]
+    },
+    sc:{
+      pos:[
+        {t:'O site está crescendo no Google de forma consistente',b:'em janeiro eram 494 visitas orgânicas; em maio chegaram a 1.957 — um crescimento de quase 4x em 5 meses, sem nenhum custo adicional de mídia.'},
+        {t:'As pessoas estão encontrando o site e clicando',b:'o CTR (taxa de clique nos resultados do Google) chegou a 3,84% em maio — acima da média do setor de saúde, que gira em torno de 2,5%. Isso significa que os títulos e descrições do site estão relevantes.'},
+        {t:'A marca está ganhando autoridade',b:'mais impressões mês a mês significam que o Google está exibindo o site para mais pessoas — mesmo quando elas não clicam, gera reconhecimento de marca sem custo.'},
+      ],
+      warn:[
+        {t:'A clínica ainda não aparece no top 5 do Google',b:'a posição média atual é 7,27 — ou seja, o site aparece mais abaixo na página de resultados. Subir para as primeiras posições pode multiplicar os cliques orgânicos sem aumentar o investimento.'},
+        {t:'Março foi o pico de visitas orgânicas (2.482)',b:'abril e maio tiveram uma leve queda. Pode ser sazonalidade ou concorrência crescente — vale monitorar em junho para entender a tendência.'},
+      ],
+      recs:[
+        {t:'Enriquecer o conteúdo das páginas que já existem',b:'o site tem estrutura excelente — /eletroencefalograma, /epilepsia, /neuropediatria já existem. O próximo passo é garantir que cada uma tenha conteúdo mais denso (preparo para o exame, o que esperar, perguntas frequentes) para o Google priorizá-las sobre os concorrentes.'},
+        {t:'Ativar o blog com consistência',b:'/blog já está no sitemap. Publicar 2 artigos por mês sobre os termos que a campanha paga valida (EEG infantil, eletroencefalograma em Brasília, neurologia Brasília) é a forma mais econômica de subir de posição organicamente.'},
+      ]
+    }
+  },
+  '2025':{
+    google:{
+      pos:[
+        {t:'Estrutura de campanhas bem montada desde o início',b:'set–dez/25 foi o período de aprendizado: o algoritmo do Google foi treinado, as palavras-chave foram ajustadas e o custo por contato caiu de R$ 6 em outubro para R$ 3,33 em novembro.'},
+        {t:'Eficiência melhorou mês a mês',b:'outubro terminou com 78 contatos e novembro com 88 — crescimento consistente enquanto as campanhas amadureciam.'},
+      ],
+      warn:[
+        {t:'Dezembro sofreu com a sazonalidade',b:'o custo por contato subiu para R$ 11,18 — o triplo da média. Volume menor de buscas no período de festas é esperado no setor de saúde.'},
+      ],
+      recs:[
+        {t:'Lição aprendida para o próximo dezembro',b:'criar em novembro uma estratégia de manutenção para dezembro: reduzir budget, focar em palavras de maior intenção e manter a marca ativa sem forçar volume.'},
+      ]
+    },
+    sc:{ pos:[{t:'Dados de Search Console disponíveis a partir de janeiro/2026',b:'o crescimento orgânico pode ser acompanhado na aba 2026 ou nos filtros mensais.'}], warn:[], recs:[] }
+  },
+  '2026':{
+    google:{
+      pos:[
+        {t:'2026 já é o melhor período da clínica no Google',b:'jan–mai/26 totalizou 1.493 contatos com custo médio de R$ 4,41 por contato — performance acima da média para clínicas de especialidade.'},
+        {t:'Março foi o mês mais eficiente: R$ 3,31 por contato',b:'com R$ 1.041 investidos e 314 contatos gerados. É a referência de eficiência que o gestor usa para calibrar os demais meses.'},
+        {t:'Maio mostrou que a escala funciona',b:'o investimento quase dobrou em relação a abril (+80%) e as conversões quase dobraram também (+60%). Isso indica que há demanda real para absorver o crescimento de budget.'},
+        {t:'EEG virou o principal motor de contatos',b:'de 37 contatos em janeiro para 297 em maio — a campanha de EEG já responde por 60% de todos os contatos gerados, com custo de R$ 5,10 por contato.'},
+      ],
+      warn:[
+        {t:'O custo por contato subiu levemente em maio (R$ 4,88 vs R$ 4,35 em abril)',b:'ainda dentro de um patamar excelente, mas vale monitorar se a tendência se mantém com o aumento de escala em junho.'},
+        {t:'Confirmar que contatos estão virando agendamentos',b:'com 495 contatos em maio, a pergunta mais importante agora é: quantos viraram consultas? Essa informação vai definir se vale escalar ainda mais ou otimizar primeiro a qualidade.'},
+      ],
+      recs:[
+        {t:'Testar aumento gradual do budget de EEG',b:'R$ 5,10 por contato com alto volume — ainda há espaço para crescer. Aumentar 20–30% e observar por 15 dias antes de escalar mais.'},
+        {t:'Criar relatório de agendamentos vinculado aos contatos do Google',b:'conectar o número de contatos gerados com os agendamentos reais da clínica vai mostrar o ROI completo das campanhas e facilitar decisões de investimento.'},
+      ]
+    },
+    sc:{
+      pos:[
+        {t:'Crescimento orgânico de +296% em 5 meses',b:'de 494 visitas em janeiro para 1.957 em maio — completamente orgânico, sem custo adicional de mídia. O site está sendo encontrado cada vez mais.'},
+        {t:'CTR acima de 3,8% em abril e maio',b:'significa que de cada 100 pessoas que viram o site no Google, quase 4 clicaram — resultado acima da média do setor de saúde.'},
+      ],
+      warn:[
+        {t:'Posição média ainda pode melhorar muito',b:'hoje a clínica aparece em média na posição 7 no Google. Subir para o top 3 — que é onde vai a maioria dos cliques — pode triplicar as visitas orgânicas sem aumentar nenhum custo.'},
+      ],
+      recs:[
+        {t:'SEO e tráfego pago se reforçam mutuamente',b:'usuários que veem o anúncio e depois buscam o nome da clínica no Google aumentam o tráfego de marca — o que sinaliza autoridade para o algoritmo. Manter as páginas de especialidades atualizadas potencializa esse efeito.'},
+        {t:'O blog é o maior ativo orgânico ainda subutilizado',b:'com a estrutura de site que a clínica já tem, artigos regulares sobre EEG, epilepsia e neurologia pediátrica podem capturar tráfego orgânico para termos que hoje só são alcançados via anúncio pago.'},
+      ]
+    }
+  }
+};
+// Single months
+['09','10','11','12'].forEach(mo=>{
+  const d=G_MONTHLY.find(x=>x.mo===mo);
+  const prev=G_MONTHLY[G_MONTHLY.indexOf(d)-1];
+  const cpl=d&&d.conv>0?d.spend/d.conv:null;
+  const prevCpl=prev&&prev.conv>0?prev.spend/prev.conv:null;
+  const convDiff=d&&prev?Math.round(((d.conv-prev.conv)/Math.max(prev.conv,1))*100):null;
+  ANALYSIS[mo]={
+    google:{
+      pos:[
+        {t:`${d?fN(d.conv):0} contatos gerados`,b:`R$ ${d?Math.round(d.spend):0} investidos${cpl?` · custo de ${fBRL(cpl)} por contato`:''}.${convDiff!==null&&prev?' Variação vs mês anterior: '+(convDiff>=0?'+':'')+convDiff+'% nos contatos.':''}`},
+      ],
+      warn:mo==='12'?[{t:'Sazonalidade típica de dezembro',b:'volume de buscas cai no setor de saúde no final do ano — CPL de R$ 11 esperado. Estratégia para mitigar está planejada para 2026.'}]:[],
+      recs:[{t:'Avalie no contexto da série completa',b:'dados de um único mês têm variações naturais — a tendência ao longo dos meses é o indicador mais confiável.'}]
+    },
+    sc:{pos:[{t:'Search Console disponível a partir de Jan/2026',b:'acesse o filtro 2026 para ver o crescimento orgânico mês a mês.'}],warn:[],recs:[]}
+  };
+});
+['01','02','03','04','05'].forEach(mo=>{
+  const d=G_MONTHLY.find(x=>x.mo===mo);
+  const sc=SC_MONTHLY.find(x=>x.mo===mo);
+  const allMonths=G_MONTHLY.filter(x=>x.year==='2026');
+  const idx=allMonths.indexOf(d);
+  const prev=idx>0?allMonths[idx-1]:null;
+  const cpl=d&&d.conv>0?d.spend/d.conv:null;
+  const prevCpl=prev&&prev.conv>0?prev.spend/prev.conv:null;
+  const convDiff=d&&prev&&prev.conv>0?Math.round(((d.conv-prev.conv)/prev.conv)*100):null;
+  const spendDiff=d&&prev&&prev.spend>0?Math.round(((d.spend-prev.spend)/prev.spend)*100):null;
+  const prevScClicks=SC_MONTHLY.find(x=>x.mo===(String(parseInt(mo)-1).padStart(2,'0')));
+  const scDiff=sc&&prevScClicks?Math.round(((sc.clicks-prevScClicks.clicks)/Math.max(prevScClicks.clicks,1))*100):null;
+
+  const posItems=[];
+  if(d){
+    posItems.push({
+      t:`${fN(d.conv)} contatos · CPL ${cpl?fBRL(cpl):'—'}`,
+      b:`R$ ${Math.round(d.spend)} investidos em ${PERIOD_LABELS[mo]}.${convDiff!==null?' Contatos '+(convDiff>=0?'cresceram +'+convDiff+'%':'caíram '+convDiff+'%')+' vs mês anterior.':''}${spendDiff!==null?' Budget '+(spendDiff>=0?'+'+spendDiff+'%':spendDiff+'%')+' vs mês anterior.':''}`
+    });
+    if(prev&&cpl&&prevCpl){
+      const cplDiff=Math.round(((cpl-prevCpl)/prevCpl)*100);
+      posItems.push({
+        t:`Custo por contato ${cplDiff<=0?'melhorou':'aumentou'} vs ${MONTH_NAMES[prev.mo]}`,
+        b:`De ${fBRL(prevCpl)} para ${fBRL(cpl)} — variação de ${cplDiff>=0?'+':''}${cplDiff}%.`
+      });
+    }
+  }
+  if(sc){
+    posItems.push({
+      t:`${fN(sc.clicks)} visitas orgânicas${scDiff!==null?' ('+(scDiff>=0?'+':'')+scDiff+'% vs mês anterior)':''}`,
+      b:`${fN(sc.impr)} exibições no Google · CTR ${sc.ctr.toFixed(2)}% · posição média ${sc.pos.toFixed(2)}º`
+    });
+  }
+  ANALYSIS[mo]={
+    google:{
+      pos:posItems,
+      warn:mo==='01'?[{t:'Performance Max pausada em fevereiro',b:'R$ 170 investidos em janeiro sem nenhum contato gerado — budget realocado para campanha de busca, que já tinha histórico positivo.'}]:[],
+      recs:[{t:'Avalie no contexto da série completa',b:'dados de um único mês têm variações naturais — a tendência ao longo dos meses é o indicador mais confiável para decisões de budget.'}]
+    },
+    sc:{
+      pos:sc?[{t:`${fN(sc.clicks)} visitas orgânicas`,b:`${fN(sc.impr)} impressões · CTR ${sc.ctr.toFixed(2)}% · posição média ${sc.pos.toFixed(2)}º`}]:[],
+      warn:[],recs:[]
+    }
+  };
+});
+
+function renderBlock(items,bc,tc,sc){ return items.length?items.map(i=>`<li style="font-size:0.81rem;color:${tc};line-height:1.6;padding-left:12px;border-left:2px solid ${bc}"><strong style="color:${sc}">${i.t}:</strong> ${i.b}</li>`).join(''):'<li style="font-size:0.81rem;color:#ffffff40;padding-left:12px">—</li>'; }
+
+function renderAnalysis(){
+  const A=ANALYSIS[currentPeriod]||ANALYSIS['all'];
+  const G=A.google, S=A.sc;
+  document.getElementById('a-sub').textContent=PERIOD_LABELS[currentPeriod]+' · Google Ads + Search Console';
+  document.getElementById('analysis-card').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
+      <span style="font-size:1rem">✦</span>
+      <span style="font-size:0.62rem;text-transform:uppercase;letter-spacing:2px;color:#ffffff60">Análise · ${PERIOD_LABELS[currentPeriod]}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div style="background:#ffffff06;border-radius:10px;padding:16px;border:1px solid #2451a840">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="background:#2451a8;color:#fff;font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:1px">Google Ads</span>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:0.68rem;font-weight:600;color:#6ee09a;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">✓ Positivos</div>
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px">${renderBlock(G.pos,'#2e9e5e','#c8e8d8','#e8f5ef')}</ul>
+        </div>
+      </div>
+      <div style="background:#ffffff06;border-radius:10px;padding:16px;border:1px solid #34a85340">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="background:#34a853;color:#fff;font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:1px">Search Console</span>
+        </div>
+        <div>
+          <div style="font-size:0.68rem;font-weight:600;color:#6ee09a;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">✓ Crescimento orgânico</div>
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px">${renderBlock(S.pos,'#34a853','#c8e8d8','#e8f5ef')}</ul>
+          ${S.warn&&S.warn.length?`<div style="font-size:0.68rem;font-weight:600;color:#f4a400;margin:12px 0 8px;text-transform:uppercase;letter-spacing:1px">⚠ Atenção</div><ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px">${renderBlock(S.warn,'#c97d00','#f5e8c8','#fff5e0')}</ul>`:''}
+          ${S.recs&&S.recs.length?`<div style="font-size:0.68rem;font-weight:600;color:#5bc4f5;margin:12px 0 8px;text-transform:uppercase;letter-spacing:1px">→ Próximos passos</div><ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px">${renderBlock(S.recs,'#2980b9','#c5e3f5','#e8f4fd')}</ul>`:''}
+        </div>
+      </div>
+    </div>
+    <div style="background:#ffffff06;border-radius:10px;padding:16px;border:1px solid #2451a840;margin-top:0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <span style="background:#2451a8;color:#fff;font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:1px">Google Ads</span>
+        <span style="font-size:0.6rem;color:#ffffff50">alertas e recomendações</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          ${G.warn&&G.warn.length?`<div style="font-size:0.68rem;font-weight:600;color:#f4a400;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">⚠ Pontos de atenção</div><ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px">${renderBlock(G.warn,'#c97d00','#f5e8c8','#fff5e0')}</ul>`:''}
+        </div>
+        <div>
+          ${G.recs&&G.recs.length?`<div style="font-size:0.68rem;font-weight:600;color:#5bc4f5;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">→ Próximos passos</div><ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px">${renderBlock(G.recs,'#2980b9','#c5e3f5','#e8f4fd')}</ul>`:''}
+        </div>
+      </div>
+    </div>
+
+  `;
+}
+
+// ══ EXPORT ════════════════════════════════════════════════════════════════
+function exportCSV(){
+  const data=gFilter();
+  const rows=[
+    ['Brasilia NeuroClínica — '+PERIOD_LABELS[currentPeriod]],[''],
+    ['=== GOOGLE ADS ==='],
+    ['Mês','Investimento','Cliques','Impressões','Conversões','CPL','CTR','CPC'],
+    ...data.map(d=>{const cpl=d.conv>0?d.spend/d.conv:null;const ctr=d.impr>0?(d.clicks/d.impr)*100:0;const cpc=d.clicks>0?d.spend/d.clicks:0;return[MONTH_NAMES[d.mo],d.spend.toFixed(2),d.clicks,d.impr,d.conv,cpl?cpl.toFixed(2):'',ctr.toFixed(2)+'%',cpc.toFixed(2)];}),
+  ];
+  const sc=scFilter();
+  if(sc.length){
+    rows.push([''],['=== SEARCH CONSOLE ==='],['Mês','Cliques','Impressões','CTR','Posição']);
+    sc.forEach(d=>rows.push([MONTH_NAMES[d.mo],d.clicks,d.impr,d.ctr.toFixed(2)+'%',d.pos.toFixed(2)]));
+  }
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`neuroclinica_${currentPeriod==='all'?'set25_mai26':currentPeriod}_2026.csv`;
+  a.click();
+}
+
+// ══ INIT ══════════════════════════════════════════════════════════════════
+document.getElementById('gen-date').textContent=new Date().toLocaleDateString('pt-BR');
+renderAll();
+</script>
+</body>
+</html>
