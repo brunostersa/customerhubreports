@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatório Brasilia NeuroClínica — Set/25–Mai/26</title>
+<title>Relatório Brasilia NeuroClínica — Set/25–Jun/26</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -91,7 +91,7 @@
 <div class="global-filter">
   <span class="gf-label">Período</span>
   <div class="gf-tabs">
-    <button class="gf-tab active" onclick="setPeriod('all',this)">Set/25–Mai/26 (tudo)</button>
+    <button class="gf-tab active" onclick="setPeriod('all',this)">Set/25–Jun/26 (tudo)</button>
     <button class="gf-tab" onclick="setPeriod('2025',this)">2025</button>
     <button class="gf-tab" onclick="setPeriod('2026',this)">2026</button>
     <button class="gf-tab" onclick="setPeriod('09',this)">Set/25</button>
@@ -103,8 +103,9 @@
     <button class="gf-tab" onclick="setPeriod('03',this)">Mar/26</button>
     <button class="gf-tab" onclick="setPeriod('04',this)">Abr/26</button>
     <button class="gf-tab" onclick="setPeriod('05',this)">Mai/26</button>
+    <button class="gf-tab" onclick="setPeriod('06',this)">Jun/26</button>
   </div>
-  <span class="gf-period" id="gf-label">Set/2025 – Mai/2026</span>
+  <span class="gf-period" id="gf-label">Set/2025 – Jun/2026</span>
 </div>
 
 <!-- Google Ads -->
@@ -149,7 +150,7 @@
   <span class="section-label label-sc">Search Console</span>
   <div>
     <div class="section-title">Tráfego Orgânico — Google Search</div>
-    <div class="section-sub" id="sc-sub">brasilianeuroclinica.com.br · jan/mai 2026</div>
+    <div class="section-sub" id="sc-sub">brasilianeuroclinica.com.br · jan/jun 2026</div>
   </div>
 </div>
 
@@ -194,6 +195,7 @@ const G_MONTHLY = [
   { mo:'03', year:'2026', spend:1040.920, conv:314,    clicks:1460, impr:9960   },
   { mo:'04', year:'2026', spend:1342.708, conv:309,    clicks:1285, impr:9295   },
   { mo:'05', year:'2026', spend:2418.588, conv:495,    clicks:1878, impr:15452  },
+  { mo:'06', year:'2026', spend:2065.330, conv:557.00, clicks:1821, impr:15465  },
 ];
 
 const G_CAMPS_RAW = [
@@ -202,15 +204,24 @@ const G_CAMPS_RAW = [
     '11':{s:385.719,c:88,k:1383,i:6470}, '12':{s:491.894,c:44,k:888,i:5506},
     '01':{s:352.577,c:91,k:606,i:3167}, '02':{s:296.145,c:165,k:668,i:2869},
     '03':{s:520.304,c:214,k:1029,i:4945}, '04':{s:595.281,c:148,k:786,i:4378},
-    '05':{s:904.051,c:198,k:927,i:5685},
+    '05':{s:904.051,c:198,k:927,i:5685}, '06':{s:386.69,c:133.40,k:533,i:3637},
   }},
   { name:'Buscas - EEG', m:{
     '01':{s:497.991,c:37,k:355,i:3548}, '02':{s:483.415,c:82,k:400,i:3518},
     '03':{s:520.616,c:100,k:431,i:5015}, '04':{s:747.427,c:161,k:499,i:4917},
-    '05':{s:1514.538,c:297,k:951,i:9767},
+    '05':{s:1514.538,c:297,k:951,i:9767}, '06':{s:843.87,c:248.77,k:628,i:6067},
   }},
   { name:'Performance Max - Geral', m:{
     '01':{s:170.386,c:0,k:808,i:120511}, '02':{s:133.425,c:0,k:865,i:32791},
+  }},
+  { name:'Busca - Exames [Dinâmica]', m:{
+    '06':{s:330.28,c:45.50,k:163,i:1427},
+  }},
+  { name:'Performance Max - Brasilia Neuro Clínica', m:{
+    '06':{s:203.30,c:105.83,k:376,i:3401},
+  }},
+  { name:'Busca - ENMG', m:{
+    '06':{s:301.18,c:23.50,k:121,i:933},
   }},
 ];
 
@@ -220,18 +231,19 @@ const SC_MONTHLY = [
   { mo:'03', year:'2026', clicks:2482, impr:113806, ctr:2.18, pos:6.46 },
   { mo:'04', year:'2026', clicks:1752, impr:45220,  ctr:3.87, pos:6.46 },
   { mo:'05', year:'2026', clicks:1957, impr:50925,  ctr:3.84, pos:7.27 },
+  { mo:'06', year:'2026', clicks:2096, impr:59588,  ctr:3.52, pos:6.80 },
 ];
 
 const MONTH_NAMES = {
   '09':'Set/25','10':'Out/25','11':'Nov/25','12':'Dez/25',
-  '01':'Jan/26','02':'Fev/26','03':'Mar/26','04':'Abr/26','05':'Mai/26'
+  '01':'Jan/26','02':'Fev/26','03':'Mar/26','04':'Abr/26','05':'Mai/26','06':'Jun/26'
 };
 const PERIOD_LABELS = {
-  'all':'Set/2025 – Mai/2026','2025':'Set–Dez/2025','2026':'Jan–Mai/2026',
+  'all':'Set/2025 – Jun/2026','2025':'Set–Dez/2025','2026':'Jan–Jun/2026',
   '09':'Setembro/2025','10':'Outubro/2025','11':'Novembro/2025','12':'Dezembro/2025',
-  '01':'Janeiro/2026','02':'Fevereiro/2026','03':'Março/2026','04':'Abril/2026','05':'Maio/2026'
+  '01':'Janeiro/2026','02':'Fevereiro/2026','03':'Março/2026','04':'Abril/2026','05':'Maio/2026','06':'Junho/2026'
 };
-const COLORS = ['#2451a8','#c85a20','#8a4a9a'];
+const COLORS = ['#2451a8','#c85a20','#8a4a9a','#2a9d6f','#d4a900','#6a6a6a'];
 
 let currentPeriod = 'all';
 let charts = {};
@@ -280,7 +292,7 @@ function renderGoogle(){
   const avg3Spend = last3.reduce((s,d)=>s+d.spend,0) / last3.length;
 
   document.getElementById('g-kpis').innerHTML=`
-    <div class="kpi-card"><div class="label">Invest. médio (últ. 3 meses)</div><div class="value">${fBRL(avg3Spend)}</div><div class="sub">Mar · Abr · Mai/26</div></div>
+    <div class="kpi-card"><div class="label">Invest. médio (últ. 3 meses)</div><div class="value">${fBRL(avg3Spend)}</div><div class="sub">Abr · Mai · Jun/26</div></div>
     <div class="kpi-card"><div class="label">Total de cliques</div><div class="value">${fN(tot.clicks)}</div><div class="sub">${PERIOD_LABELS[currentPeriod]}</div></div>
     <div class="kpi-card"><div class="label">Total de conversões</div><div class="value">${fN(tot.conv)}</div><div class="sub">${PERIOD_LABELS[currentPeriod]}</div></div>
     <div class="kpi-card"><div class="label">CTR médio</div><div class="value">${fPct(avgCTR)}</div><div class="sub">CPC ${fBRL(avgCPC)}</div></div>
@@ -463,30 +475,31 @@ const ANALYSIS = {
   'all':{
     google:{
       pos:[
-        {t:'Maio foi o melhor mês da história',b:'495 contatos gerados com custo médio de R$ 4,88 por contato — o maior volume desde o início das campanhas, com eficiência acima da média do mercado de saúde.'},
-        {t:'Cada real investido gerou mais retorno',b:'em março, o custo por contato chegou a R$ 3,31 — o mais baixo do período. Mesmo em maio, com o dobro de investimento, o custo se manteve abaixo de R$ 5,00, mostrando que a escala está sendo feita de forma saudável.'},
-        {t:'Campanha de EEG se tornou o principal motor de crescimento',b:'lançada em janeiro, a campanha de EEG respondia por 37 conversões no primeiro mês e chegou a 297 em maio — um crescimento de +703% em 5 meses, com custo por contato de R$ 5,10.'},
-        {t:'Crescimento orgânico complementando o tráfego pago',b:'o site passou de 494 visitas orgânicas em janeiro para 1.957 em maio, sem nenhum custo adicional. Isso mostra que as campanhas pagas estão ajudando o Google a reconhecer a clínica como referência na área.'},
+        {t:'Junho foi o mês mais eficiente da história',b:'557 contatos gerados com custo médio de R$ 3,71 por contato — o melhor CPL desde março, mesmo com o investimento 15% menor que em maio.'},
+        {t:'Mais contatos gastando menos',b:'o investimento caiu de R$ 2.419 para R$ 2.065 (-15%) e mesmo assim os contatos cresceram de 495 para 557 (+13%) — o custo por contato melhorou 24% em um único mês.'},
+        {t:'Campanha de EEG segue como o principal motor de contatos',b:'lançada em janeiro com 37 conversões, já soma 926 contatos em 2026 — 45% de tudo que a conta gerou no ano — e ficou mais barata em junho (R$ 3,39 por contato, vs R$ 5,10 em maio).'},
+        {t:'Crescimento orgânico complementando o tráfego pago',b:'o site passou de 494 visitas orgânicas em janeiro para 2.096 em junho — um crescimento de +324% em 6 meses, sem nenhum custo adicional.'},
       ],
       warn:[
-        {t:'O aumento de investimento em maio precisa ser acompanhado',b:'o budget quase dobrou em relação a abril (de R$ 1.343 para R$ 2.419). Os resultados foram positivos, mas é importante confirmar nos próximos meses que o volume de agendamentos reais está acompanhando o volume de contatos.'},
+        {t:'Três campanhas novas foram lançadas em junho',b:'Busca - Exames [Dinâmica], Performance Max - Brasilia Neuro Clínica e Busca - ENMG começaram a rodar. Com apenas 1 mês de dados é cedo para julgar performance — recomenda-se acompanhar de perto nos próximos 60 dias.'},
+        {t:'ENMG teve o custo por contato mais alto do mês',b:'R$ 12,82 por contato, mais de 3x a média da conta (R$ 3,71). Vale revisar palavras-chave e página de destino antes de aumentar o budget dessa campanha.'},
         {t:'Dezembro é o mês que precisa de atenção especial',b:'no final de 2025, o custo por contato chegou a R$ 11 — o triplo da média. Isso é esperado em dez/jan no setor de saúde, mas vale planejar uma estratégia específica com antecedência.'},
       ],
       recs:[
-        {t:'Manter as duas campanhas de busca ativas',b:'Institucional e EEG estão funcionando bem juntas — uma captura quem busca a clínica pelo nome, a outra captura quem busca pelo exame. Esse complemento é estratégico.'},
-        {t:'Transformar o tráfego orgânico em vantagem competitiva',b:'com quase 2.000 visitas orgânicas por mês, vale criar páginas específicas para EEG e neurologia no site — isso pode gerar contatos gratuitos nos próximos meses e reduzir a dependência do budget pago.'},
-        {t:'Acompanhar a qualidade dos contatos de junho',b:'com o crescimento de escala, o indicador mais importante agora é: quantos dos contatos gerados estão virando agendamentos? Isso vai guiar o ajuste fino do investimento.'},
+        {t:'Confirmar quantos contatos de junho viraram agendamentos',b:'com 557 contatos e o melhor CPL em 3 meses, o próximo passo é validar a taxa de conversão em agendamentos reais antes de decidir se vale escalar ainda mais o budget em julho.'},
+        {t:'Transformar o tráfego orgânico em vantagem competitiva',b:'com mais de 2.000 visitas orgânicas por mês, vale criar páginas específicas para EEG e neurologia no site — isso pode gerar contatos gratuitos e reduzir a dependência do budget pago.'},
+        {t:'Dar tempo para as campanhas novas amadurecerem',b:'Exames [Dinâmica] (R$ 7,26/contato) e Performance Max - Brasilia Neuro Clínica (R$ 1,92/contato) tiveram estreias opostas — a segunda já é a mais barata da conta. Observar mais um ciclo antes de redistribuir budget entre elas.'},
       ]
     },
     sc:{
       pos:[
-        {t:'O site está crescendo no Google de forma consistente',b:'em janeiro eram 494 visitas orgânicas; em maio chegaram a 1.957 — um crescimento de quase 4x em 5 meses, sem nenhum custo adicional de mídia.'},
-        {t:'As pessoas estão encontrando o site e clicando',b:'o CTR (taxa de clique nos resultados do Google) chegou a 3,84% em maio — acima da média do setor de saúde, que gira em torno de 2,5%. Isso significa que os títulos e descrições do site estão relevantes.'},
-        {t:'A marca está ganhando autoridade',b:'mais impressões mês a mês significam que o Google está exibindo o site para mais pessoas — mesmo quando elas não clicam, gera reconhecimento de marca sem custo.'},
+        {t:'O site está crescendo no Google de forma consistente',b:'em janeiro eram 494 visitas orgânicas; em junho chegaram a 2.096 — um crescimento de mais de 4x em 6 meses, sem nenhum custo adicional de mídia.'},
+        {t:'As pessoas estão encontrando o site e clicando',b:'o CTR (taxa de clique nos resultados do Google) foi de 3,52% em junho — acima da média do setor de saúde, que gira em torno de 2,5%. Isso significa que os títulos e descrições do site estão relevantes.'},
+        {t:'A posição média melhorou em junho',b:'de 7,27 em maio para 6,80 em junho — o site está subindo gradualmente nos resultados de busca, o que tende a acelerar o crescimento de cliques.'},
       ],
       warn:[
-        {t:'A clínica ainda não aparece no top 5 do Google',b:'a posição média atual é 7,27 — ou seja, o site aparece mais abaixo na página de resultados. Subir para as primeiras posições pode multiplicar os cliques orgânicos sem aumentar o investimento.'},
-        {t:'Março foi o pico de visitas orgânicas (2.482)',b:'abril e maio tiveram uma leve queda. Pode ser sazonalidade ou concorrência crescente — vale monitorar em junho para entender a tendência.'},
+        {t:'A clínica ainda não aparece no top 5 do Google',b:'a posição média atual é 6,80 — ou seja, o site ainda aparece mais abaixo na página de resultados. Subir para as primeiras posições pode multiplicar os cliques orgânicos sem aumentar o investimento.'},
+        {t:'Março segue como o pico de visitas orgânicas (2.482)',b:'abril e maio tiveram queda e junho recuperou parte do volume (2.096). Vale monitorar se a tendência de recuperação se mantém em julho.'},
       ],
       recs:[
         {t:'Enriquecer o conteúdo das páginas que já existem',b:'o site tem estrutura excelente — /eletroencefalograma, /epilepsia, /neuropediatria já existem. O próximo passo é garantir que cada uma tenha conteúdo mais denso (preparo para o exame, o que esperar, perguntas frequentes) para o Google priorizá-las sobre os concorrentes.'},
@@ -512,27 +525,29 @@ const ANALYSIS = {
   '2026':{
     google:{
       pos:[
-        {t:'2026 já é o melhor período da clínica no Google',b:'jan–mai/26 totalizou 1.493 contatos com custo médio de R$ 4,41 por contato — performance acima da média para clínicas de especialidade.'},
-        {t:'Março foi o mês mais eficiente: R$ 3,31 por contato',b:'com R$ 1.041 investidos e 314 contatos gerados. É a referência de eficiência que o gestor usa para calibrar os demais meses.'},
-        {t:'Maio mostrou que a escala funciona',b:'o investimento quase dobrou em relação a abril (+80%) e as conversões quase dobraram também (+60%). Isso indica que há demanda real para absorver o crescimento de budget.'},
-        {t:'EEG virou o principal motor de contatos',b:'de 37 contatos em janeiro para 297 em maio — a campanha de EEG já responde por 60% de todos os contatos gerados, com custo de R$ 5,10 por contato.'},
+        {t:'2026 segue como o melhor período da clínica no Google',b:'jan–jun/26 totalizou 2.050 contatos com custo médio de R$ 4,29 por contato — performance acima da média para clínicas de especialidade.'},
+        {t:'Março segue como o mês mais eficiente: R$ 3,31 por contato',b:'com R$ 1.041 investidos e 314 contatos gerados. Junho chegou perto, com R$ 3,71 por contato — o segundo melhor resultado do ano.'},
+        {t:'Junho provou que dá para crescer gastando menos',b:'o investimento caiu 15% em relação a maio (de R$ 2.419 para R$ 2.065) e mesmo assim os contatos cresceram 13% (de 495 para 557) — o CPL caiu 24%.'},
+        {t:'EEG segue como o principal motor de contatos',b:'de 37 contatos em janeiro para 926 acumulados até junho — a campanha de EEG já responde por 45% de todos os contatos gerados no ano, com custo médio de R$ 4,98 por contato.'},
       ],
       warn:[
-        {t:'O custo por contato subiu levemente em maio (R$ 4,88 vs R$ 4,35 em abril)',b:'ainda dentro de um patamar excelente, mas vale monitorar se a tendência se mantém com o aumento de escala em junho.'},
-        {t:'Confirmar que contatos estão virando agendamentos',b:'com 495 contatos em maio, a pergunta mais importante agora é: quantos viraram consultas? Essa informação vai definir se vale escalar ainda mais ou otimizar primeiro a qualidade.'},
+        {t:'Três campanhas novas estrearam em junho',b:'Exames [Dinâmica], Performance Max - Brasilia Neuro Clínica e ENMG têm apenas 1 mês de dados — cedo para julgar performance, mas o CPL de ENMG (R$ 12,82) já pede atenção.'},
+        {t:'Confirmar que contatos estão virando agendamentos',b:'com 2.050 contatos acumulados no ano, a pergunta mais importante agora é: quantos viraram consultas? Essa informação vai definir se vale escalar ainda mais ou otimizar primeiro a qualidade.'},
       ],
       recs:[
-        {t:'Testar aumento gradual do budget de EEG',b:'R$ 5,10 por contato com alto volume — ainda há espaço para crescer. Aumentar 20–30% e observar por 15 dias antes de escalar mais.'},
+        {t:'Revisar a campanha de ENMG antes de aumentar o budget',b:'CPL de R$ 12,82 é o mais alto da conta em junho — ajustar palavras-chave, lances ou landing page antes de investir mais nela.'},
+        {t:'Testar aumento gradual do budget de Performance Max - Brasilia Neuro Clínica',b:'estreou em junho com R$ 1,92 por contato, o mais barato da conta. Se o resultado se confirmar em julho, vale aumentar o budget em 20–30%.'},
         {t:'Criar relatório de agendamentos vinculado aos contatos do Google',b:'conectar o número de contatos gerados com os agendamentos reais da clínica vai mostrar o ROI completo das campanhas e facilitar decisões de investimento.'},
       ]
     },
     sc:{
       pos:[
-        {t:'Crescimento orgânico de +296% em 5 meses',b:'de 494 visitas em janeiro para 1.957 em maio — completamente orgânico, sem custo adicional de mídia. O site está sendo encontrado cada vez mais.'},
-        {t:'CTR acima de 3,8% em abril e maio',b:'significa que de cada 100 pessoas que viram o site no Google, quase 4 clicaram — resultado acima da média do setor de saúde.'},
+        {t:'Crescimento orgânico de +324% em 6 meses',b:'de 494 visitas em janeiro para 2.096 em junho — completamente orgânico, sem custo adicional de mídia. O site está sendo encontrado cada vez mais.'},
+        {t:'CTR acima de 3,5% desde abril',b:'significa que de cada 100 pessoas que viram o site no Google, mais de 3 clicaram — resultado acima da média do setor de saúde.'},
+        {t:'Posição média melhorou em junho',b:'de 7,27 em maio para 6,80 em junho — sinal de que o site está subindo nos resultados de busca.'},
       ],
       warn:[
-        {t:'Posição média ainda pode melhorar muito',b:'hoje a clínica aparece em média na posição 7 no Google. Subir para o top 3 — que é onde vai a maioria dos cliques — pode triplicar as visitas orgânicas sem aumentar nenhum custo.'},
+        {t:'Posição média ainda pode melhorar muito',b:'hoje a clínica aparece em média na posição 6,8 no Google. Subir para o top 3 — que é onde vai a maioria dos cliques — pode triplicar as visitas orgânicas sem aumentar nenhum custo.'},
       ],
       recs:[
         {t:'SEO e tráfego pago se reforçam mutuamente',b:'usuários que veem o anúncio e depois buscam o nome da clínica no Google aumentam o tráfego de marca — o que sinaliza autoridade para o algoritmo. Manter as páginas de especialidades atualizadas potencializa esse efeito.'},
@@ -559,7 +574,7 @@ const ANALYSIS = {
     sc:{pos:[{t:'Search Console disponível a partir de Jan/2026',b:'acesse o filtro 2026 para ver o crescimento orgânico mês a mês.'}],warn:[],recs:[]}
   };
 });
-['01','02','03','04','05'].forEach(mo=>{
+['01','02','03','04','05','06'].forEach(mo=>{
   const d=G_MONTHLY.find(x=>x.mo===mo);
   const sc=SC_MONTHLY.find(x=>x.mo===mo);
   const allMonths=G_MONTHLY.filter(x=>x.year==='2026');
@@ -673,7 +688,7 @@ function exportCSV(){
   const csv=rows.map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
-  a.download=`neuroclinica_${currentPeriod==='all'?'set25_mai26':currentPeriod}_2026.csv`;
+  a.download=`neuroclinica_${currentPeriod==='all'?'set25_jun26':currentPeriod}_2026.csv`;
   a.click();
 }
 
